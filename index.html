@@ -36,8 +36,6 @@
 
       const priceElement = document.getElementById('priceElement');
 
-      priceElement.textContent = 'Generating quote...';
-
       fetch('https://lucky-liger-cadc9d.netlify.app/.netlify/functions/upload', {
         method: 'POST',
         body: formData,
