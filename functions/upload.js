@@ -30,7 +30,7 @@ const upload = multer({
   }
 });
 
-app.post('/.netlify/functions/upload', upload.single('file'), (req, res) => {
+app.post('https://lucky-liger-cadc9d.netlify.app/.netlify/functions/upload', upload.single('file'), (req, res) => {
   const origin = req.headers.origin;
 
   if (allowedOrigins.includes(origin)) {
