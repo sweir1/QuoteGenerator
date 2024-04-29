@@ -17,13 +17,14 @@ const upload = multer({
     if (allowedExtensions.includes(ext)) {
       callback(null, true);
     } else {
-      callback(new Error('Only Word, PDF, Excel, and PPT files are allowed.'));
+      callback(new Error('Only Word, PDF, Excel, PPT, and text files are allowed.'));
     }
   }
 });
 
 app.post('/.netlify/functions/upload', upload.single('file'), (req, res) => {
   const file = req.file;
+  const turnaroundTime = req.body.turnaroundTime;
   const ext = path.extname(file.originalname).toLowerCase();
 
   if (ext === '.pdf') {
@@ -31,8 +32,9 @@ app.post('/.netlify/functions/upload', upload.single('file'), (req, res) => {
     pdfParse(file.buffer).then(data => {
       const text = data.text;
       const wordCount = text.trim().split(/\s+/).length;
-      const price = calculatePrice(wordCount);
-      res.json({ price });
+      const basePrice = calculatePrice(wordCount);
+      const totalPrice = applyTurnaroundTimeMultiplier(basePrice, turnaroundTime);
+      res.json({ price: totalPrice });
     }).catch(error => {
       console.error('Error parsing PDF:', error);
       res.status(500).json({ error: 'Failed to parse the PDF file.' });
@@ -45,8 +47,9 @@ app.post('/.netlify/functions/upload', upload.single('file'), (req, res) => {
         res.status(500).json({ error: 'Failed to extract text from the file.' });
       } else {
         const wordCount = text.trim().split(/\s+/).length;
-        const price = calculatePrice(wordCount);
-        res.json({ price });
+        const basePrice = calculatePrice(wordCount);
+        const totalPrice = applyTurnaroundTimeMultiplier(basePrice, turnaroundTime);
+        res.json({ price: totalPrice });
       }
     });
   }
@@ -56,6 +59,19 @@ function calculatePrice(wordCount) {
   // Implement your pricing logic here
   // For simplicity, let's assume the price is $10 per 100 words
   return (wordCount / 100) * 10;
+}
+
+function applyTurnaroundTimeMultiplier(basePrice, turnaroundTime) {
+  // Adjust the multipliers based on your pricing strategy
+  const multipliers = {
+    '24 hours': 1.5,
+    '48 hours': 1.2,
+    '3 days': 1.0
+    // Add more options as needed
+  };
+
+  const multiplier = multipliers[turnaroundTime] || 1.0;
+  return basePrice * multiplier;
 }
 
 module.exports.handler = serverless(app);
