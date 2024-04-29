@@ -7,7 +7,15 @@ const pdfParse = require('pdf-parse');
 
 const app = express();
 
-// Configure multer storage and file filter
+const allowedOrigins = [
+  'http://localhost:8888', // Local development domain, adjust if needed
+  'https://lucky-liger-cadc9d.netlify.app', // Replace with your production domain
+  'https://eduardos-stupendous-site-4488f5.webflow.io/get-a-quote',
+  'https://www.typewriters.ai'
+
+  // Add other allowed domains as needed
+];
+
 const storage = multer.memoryStorage();
 const upload = multer({
   storage: storage,
@@ -23,12 +31,20 @@ const upload = multer({
 });
 
 app.post('/.netlify/functions/upload', upload.single('file'), (req, res) => {
+  const origin = req.headers.origin;
+
+  // Set CORS headers if origin is allowed
+  if (allowedOrigins.includes(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  }
+
   const file = req.file;
   const turnaroundTime = req.body.turnaroundTime;
   const ext = path.extname(file.originalname).toLowerCase();
 
   if (ext === '.pdf') {
-    // Handle PDF files using pdf-parse
     pdfParse(file.buffer).then(data => {
       const text = data.text;
       const wordCount = text.trim().split(/\s+/).length;
@@ -40,7 +56,6 @@ app.post('/.netlify/functions/upload', upload.single('file'), (req, res) => {
       res.status(500).json({ error: 'Failed to parse the PDF file.' });
     });
   } else {
-    // Handle other file types using textract
     textract.fromBufferWithName(file.originalname, file.buffer, (error, text) => {
       if (error) {
         console.error('Error extracting text:', error);
@@ -56,18 +71,14 @@ app.post('/.netlify/functions/upload', upload.single('file'), (req, res) => {
 });
 
 function calculatePrice(wordCount) {
-  // Implement your pricing logic here
-  // For simplicity, let's assume the price is $10 per 100 words
   return (wordCount / 100) * 10;
 }
 
 function applyTurnaroundTimeMultiplier(basePrice, turnaroundTime) {
-  // Adjust the multipliers based on your pricing strategy
   const multipliers = {
     '24 hours': 1.5,
     '48 hours': 1.2,
-    '3 days': 1.0
-    // Add more options as needed
+    '3 days': 1.0,
   };
 
   const multiplier = multipliers[turnaroundTime] || 1.0;
