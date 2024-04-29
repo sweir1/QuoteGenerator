@@ -11,7 +11,8 @@ const allowedOrigins = [
   'http://localhost:8888', // Local development domain, adjust if needed
   'https://lucky-liger-cadc9d.netlify.app', // Replace with your production domain
   'https://eduardos-stupendous-site-4488f5.webflow.io',
-  'https://www.typewriters.ai',
+  'https://www.typewriters.ai'
+
   // Add other allowed domains as needed
 ];
 
@@ -29,7 +30,7 @@ const upload = multer({
   }
 });
 
-app.post('https://lucky-liger-cadc9d.netlify.app/.netlify/functions/upload', upload.single('file'), (req, res) => {
+app.post('/.netlify/functions/upload', upload.single('file'), (req, res) => {
   const origin = req.headers.origin;
 
   if (allowedOrigins.includes(origin)) {
