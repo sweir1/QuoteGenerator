@@ -17,6 +17,8 @@
 
     <label for="fileInput">Upload File:</label>
     <input type="file" id="fileInput" name="file" required>
+
+    <!-- Removed the submit button to trigger updates automatically -->
   </form>
 
   <p>Price: $<span id="priceElement">0.00</span></p>
@@ -26,22 +28,33 @@
       const form = document.getElementById('uploadForm');
       const formData = new FormData(form);
 
-      fetch('https://lucky-liger-cadc9d.netlify.app/.netlify/functions/upload', {
+      const priceElement = document.getElementById('priceElement');
+
+      // Indicate that a quote is being generated
+      priceElement.textContent = 'Generating quote...';
+
+      fetch('.netlify/functions/upload', {
+      //fetch('https://lucky-liger-cadc9d.netlify.app/.netlify/functions/upload', {
         method: 'POST',
         body: formData,
       })
-      .then(response => response.json())
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP Error: ${response.status}`);
+        }
+        return response.json();
+      })
       .then(data => {
         if (data.error) {
-          console.error('Error:', data.error);
-          document.getElementById('priceElement').textContent = 'Error calculating price. Please try again.';
+          console.error("Backend Error:", data.error);
+          priceElement.textContent = 'Error calculating price. Please try again.';
         } else {
-          document.getElementById('priceElement').textContent = data.price.toFixed(2); // Display the price
+          priceElement.textContent = data.price.toFixed(2); // Display the price
         }
       })
       .catch(error => {
         console.error('Error:', error);
-        document.getElementById('priceElement').textContent = 'An error occurred. Please try again.';
+        priceElement.textContent = `An error occurred: ${error.message}. Please try again.`;
       });
     }
 

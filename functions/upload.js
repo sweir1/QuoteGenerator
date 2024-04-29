@@ -49,7 +49,7 @@ app.post('/.netlify/functions/upload', upload.single('file'), (req, res) => {
       const text = data.text;
       const wordCount = text.trim().split(/\s+/).length;
       const basePrice = calculatePrice(wordCount);
-      const totalPrice = applyTurnaroundTimeMultiplier(basePrice, turnaroundTime);
+      const totalPrice = applyTurnaroundTimeSurcharge(basePrice, turnaroundTime);
       res.json({ price: totalPrice });
     }).catch(error => {
       console.error('Error parsing PDF:', error);
@@ -63,7 +63,7 @@ app.post('/.netlify/functions/upload', upload.single('file'), (req, res) => {
       } else {
         const wordCount = text.trim().split(/\s+/).length;
         const basePrice = calculatePrice(wordCount);
-        const totalPrice = applyTurnaroundTimeMultiplier(basePrice, turnaroundTime);
+        const totalPrice = applyTurnaroundTimeSurcharge(basePrice, turnaroundTime);
         res.json({ price: totalPrice });
       }
     });
@@ -71,18 +71,33 @@ app.post('/.netlify/functions/upload', upload.single('file'), (req, res) => {
 });
 
 function calculatePrice(wordCount) {
-  return (wordCount / 100) * 10;
+  let basePrice;
+
+  if (wordCount < 501) {
+    basePrice = 0.12; // $0.12 per word for small requests
+  } else if (wordCount <= 1500) {
+    basePrice = 0.10; // $0.10 per word for medium requests
+  } else {
+    basePrice = 0.08; // $0.08 per word for large requests
+  }
+
+  return wordCount * basePrice;
 }
 
-function applyTurnaroundTimeMultiplier(basePrice, turnaroundTime) {
-  const multipliers = {
-    '24 hours': 1.5,
-    '48 hours': 1.2,
-    '3 days': 1.0,
-  };
+function applyTurnaroundTimeSurcharge(basePrice, turnaroundTime, wordCount) {
+  let total = basePrice;
 
-  const multiplier = multipliers[turnaroundTime] || 1.0;
-  return basePrice * multiplier;
+  if (turnaroundTime === '24 hours') {
+    if (wordCount < 501) {
+      total += 15; // $15 surcharge for small requests
+    } else if (wordCount <= 1500) {
+      total += 15; // $15 surcharge for medium requests
+    } else {
+      total += 25; // $25 surcharge for large requests
+    }
+  }
+
+  return total;
 }
 
 module.exports.handler = serverless(app);
