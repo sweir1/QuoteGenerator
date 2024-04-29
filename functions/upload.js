@@ -10,7 +10,7 @@ const app = express();
 const allowedOrigins = [
   'http://localhost:8888', // Local development domain, adjust if needed
   'https://lucky-liger-cadc9d.netlify.app', // Replace with your production domain
-  'https://eduardos-stupendous-site-4488f5.webflow.io/get-a-quote',
+  'https://eduardos-stupendous-site-4488f5.webflow.io',
   'https://www.typewriters.ai'
 
   // Add other allowed domains as needed
