@@ -11,8 +11,7 @@ const allowedOrigins = [
   'http://localhost:8888', // Local development domain, adjust if needed
   'https://lucky-liger-cadc9d.netlify.app', // Replace with your production domain
   'https://eduardos-stupendous-site-4488f5.webflow.io',
-  'https://www.typewriters.ai'
-
+  'https://www.typewriters.ai',
   // Add other allowed domains as needed
 ];
 
@@ -30,10 +29,9 @@ const upload = multer({
   }
 });
 
-app.post('/.netlify/functions/upload', upload.single('file'), (req, res) => {
+app.post('https://lucky-liger-cadc9d.netlify.app/.netlify/functions/upload', upload.single('file'), (req, res) => {
   const origin = req.headers.origin;
 
-  // Set CORS headers if origin is allowed
   if (allowedOrigins.includes(origin)) {
     res.setHeader('Access-Control-Allow-Origin', origin);
     res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -42,14 +40,50 @@ app.post('/.netlify/functions/upload', upload.single('file'), (req, res) => {
 
   const file = req.file;
   const turnaroundTime = req.body.turnaroundTime;
+  const quality = req.body.quality; // Capture the new "quality" field
   const ext = path.extname(file.originalname).toLowerCase();
+
+  function calculatePrice(wordCount) {
+
+    let basePrice;
+    if (wordCount < 501) {
+      basePrice = 0.12; // Small requests
+    } else if (wordCount <= 1500) {
+      basePrice = 0.10; // Medium requests
+    } else {
+      basePrice = 0.08; // Large requests
+    }
+
+    // Apply quality surcharge if business-specific
+    if (quality === 'Business specific') {
+      basePrice += 0.02; // Additional $0.02 per word
+    }
+
+    return wordCount * basePrice;
+  }
+
+  function applyTurnaroundTimeSurcharge(basePrice, turnaroundTime, wordCount) {
+    let total = basePrice;
+
+    if (turnaroundTime === '24 hours') {
+      if (wordCount < 501) {
+        total += 15; // $15 surcharge for small requests
+      } else if (wordCount <= 1500) {
+        total += 15; // $15 surcharge for medium requests
+      } else {
+        total += 25; // $25 surcharge for large requests
+      }
+    }
+
+    return total;
+  }
 
   if (ext === '.pdf') {
     pdfParse(file.buffer).then(data => {
       const text = data.text;
       const wordCount = text.trim().split(/\s+/).length;
       const basePrice = calculatePrice(wordCount);
-      const totalPrice = applyTurnaroundTimeSurcharge(basePrice, turnaroundTime);
+      const totalPrice = applyTurnaroundTimeSurcharge(basePrice, turnaroundTime, wordCount);
       res.json({ price: totalPrice });
     }).catch(error => {
       console.error('Error parsing PDF:', error);
@@ -63,41 +97,11 @@ app.post('/.netlify/functions/upload', upload.single('file'), (req, res) => {
       } else {
         const wordCount = text.trim().split(/\s+/).length;
         const basePrice = calculatePrice(wordCount);
-        const totalPrice = applyTurnaroundTimeSurcharge(basePrice, turnaroundTime);
+        const totalPrice = applyTurnaroundTimeSurcharge(basePrice, turnaroundTime, wordCount);
         res.json({ price: totalPrice });
       }
     });
   }
 });
-
-function calculatePrice(wordCount) {
-  let basePrice;
-
-  if (wordCount < 501) {
-    basePrice = 0.12; // $0.12 per word for small requests
-  } else if (wordCount <= 1500) {
-    basePrice = 0.10; // $0.10 per word for medium requests
-  } else {
-    basePrice = 0.08; // $0.08 per word for large requests
-  }
-
-  return wordCount * basePrice;
-}
-
-function applyTurnaroundTimeSurcharge(basePrice, turnaroundTime, wordCount) {
-  let total = basePrice;
-
-  if (turnaroundTime === '24 hours') {
-    if (wordCount < 501) {
-      total += 15; // $15 surcharge for small requests
-    } else if (wordCount <= 1500) {
-      total += 15; // $15 surcharge for medium requests
-    } else {
-      total += 25; // $25 surcharge for large requests
-    }
-  }
-
-  return total;
-}
 
 module.exports.handler = serverless(app);

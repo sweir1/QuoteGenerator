@@ -15,6 +15,12 @@
       <!-- Add more options if needed -->
     </select>
 
+    <label for="quality">Quality:</label>
+    <select id="quality" name="quality" required>
+      <option value="Business specific">Business specific</option>
+      <option value="Generic">Generic</option>
+    </select>
+
     <label for="fileInput">Upload File:</label>
     <input type="file" id="fileInput" name="file" required>
 
@@ -30,11 +36,9 @@
 
       const priceElement = document.getElementById('priceElement');
 
-      // Indicate that a quote is being generated
       priceElement.textContent = 'Generating quote...';
 
-      fetch('.netlify/functions/upload', {
-      //fetch('https://lucky-liger-cadc9d.netlify.app/.netlify/functions/upload', {
+      fetch('/.netlify/functions/upload', {
         method: 'POST',
         body: formData,
       })
