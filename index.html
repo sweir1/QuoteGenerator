@@ -2,10 +2,10 @@
 <html>
 <head>
   <title>Quote Generator</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
   <h1>Quote Generator</h1>
-
   <form id="uploadForm">
     <label for="turnaroundTime">Delivery Time:</label>
     <select id="turnaroundTime" name="turnaroundTime" required>
@@ -14,53 +14,132 @@
       <option value="3 days">3 days</option>
       <!-- Add more options if needed -->
     </select>
-
     <label for="quality">Quality:</label>
     <select id="quality" name="quality" required>
       <option value="Business specific">Business specific</option>
       <option value="Generic">Generic</option>
     </select>
 
-    <label for="fileInput">Upload File:</label>
-    <input type="file" id="fileInput" name="file" required>
+    <div class="custom-file">
+      <input type="file" class="custom-file-input" id="fileInput" name="file" accept=".doc,.docx,.pdf,.xls,.xlsx,.ppt,.pptx,.txt" required>
+      <label class="custom-file-label" for="fileInput">Choose file or drag and drop</label>
+    </div>
+    </form>
+    <p id="priceElement">Price: $0.00</p>
+    <button id="payButton" onclick="generateStripePaymentLink()">Pay with Stripe</button>
+    <script>
+      const fileInput = document.getElementById('fileInput');
+      const fileLabel = document.querySelector('.custom-file-label');
 
-    <!-- Removed the submit button to trigger updates automatically -->
-  </form>
-
-  <p>Price: $<span id="priceElement">0.00</span></p>
-
-  <script>
-    function calculatePrice() {
-      const form = document.getElementById('uploadForm');
-      const formData = new FormData(form);
-
-      const priceElement = document.getElementById('priceElement');
-
-      fetch('https://lucky-liger-cadc9d.netlify.app/.netlify/functions/upload', {
-        method: 'POST',
-        body: formData,
-      })
-      .then(response => {
-        if (!response.ok) {
-          throw new Error(`HTTP Error: ${response.status}`);
-        }
-        return response.json();
-      })
-      .then(data => {
-        if (data.error) {
-          console.error("Backend Error:", data.error);
-          priceElement.textContent = 'Error calculating price. Please try again.';
+      // Update label text when file is selected
+      fileInput.addEventListener('change', function (e) {
+        if (fileInput.files.length === 0) {
+          // No file selected, reset file label
+          fileLabel.textContent = 'Choose file or drag and drop';
         } else {
-          priceElement.textContent = data.price.toFixed(2); // Display the price
-        }
-      })
-      .catch(error => {
-        console.error('Error:', error);
-        priceElement.textContent = `An error occurred: ${error.message}. Please try again.`;
-      });
-    }
+          const fileName = e.target.files[0].name;
+          const allowedExtensions = ['.doc', '.docx', '.pdf', '.xls', '.xlsx', '.ppt', '.pptx', '.txt'];
+          const fileExtension = fileName.slice(fileName.lastIndexOf('.')).toLowerCase();
 
-    document.getElementById('uploadForm').addEventListener('change', calculatePrice); // Trigger recalculation on form change
-  </script>
-</body>
+          if (allowedExtensions.includes(fileExtension)) {
+            fileLabel.textContent = fileName;
+            calculatePrice(); // Trigger price calculation when file is selected
+          } else {
+            fileInput.value = ''; // Clear the file input
+            fileLabel.textContent = 'Choose file or drag and drop';
+            alert('Only Word, PDF, Excel, PPT, and text files are allowed.');
+          }
+        }
+      });
+
+      // Prevent default drag behaviors
+      ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        document.addEventListener(eventName, preventDefaults, false);
+      });
+
+      // Handle dropped files
+      document.addEventListener('drop', handleDrop, false);
+
+      function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+
+      function handleDrop(e) {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        fileInput.files = files;
+        fileInput.dispatchEvent(new Event('change'));
+      }
+    </script>
+    <script>
+      function calculatePrice() {
+        const form = document.getElementById('uploadForm');
+        const formData = new FormData(form);
+        const priceElement = document.getElementById('priceElement');
+        if (fileInput.files.length === 0) {
+          // No file selected, reset price display
+          priceElement.textContent = 'Price: $0.00';
+          return;
+        }
+
+        priceElement.textContent = 'Calculating...'; // Show "Calculating..." message
+
+        fetch('/.netlify/functions/upload', {
+          method: 'POST',
+          body: formData,
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`HTTP Error: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then(data => {
+          if (data.error) {
+            console.error("Backend Error:", data.error);
+            priceElement.textContent = 'Error calculating price. Please try again.';
+          } else {
+            priceElement.textContent = `Price: $${data.price.toFixed(2)}`; // Display the price
+          }
+
+          const payButton = document.getElementById('payButton');
+          if (data.error || fileInput.files.length === 0) {
+            payButton.disabled = true;
+          } else {
+            payButton.disabled = false;
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          priceElement.textContent = `An error occurred: ${error.message}. Please try again.`;
+        });
+      }
+
+      function generateStripePaymentLink() {
+        const form = document.getElementById('uploadForm');
+        const formData = new FormData(form);
+
+        fetch('https://lucky-liger-cadc9d.netlify.app/.netlify/functions/create-stripe-payment', {
+          method: 'POST',
+          body: formData,
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.error) {
+            console.error('Error generating Stripe payment link:', data.error);
+            alert('An error occurred while generating the payment link. Please try again.');
+          } else {
+            window.location.href = data.paymentLink;
+          }
+        })
+        .catch(error => {
+          console.error('Error generating Stripe payment link:', error);
+          alert('An error occurred while generating the payment link. Please try again.');
+        });
+      }
+
+      document.getElementById('uploadForm').addEventListener('change', calculatePrice); // Trigger recalculation on form change
+    </script>
+  </body>
 </html>
