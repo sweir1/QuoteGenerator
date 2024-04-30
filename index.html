@@ -120,7 +120,7 @@
         const form = document.getElementById('uploadForm');
         const formData = new FormData(form);
 
-        fetch('.netlify/functions/create-stripe-payment', {
+        fetch('https://lucky-liger-cadc9d.netlify.app/.netlify/functions/create-stripe-payment', {
           method: 'POST',
           body: formData,
         })
