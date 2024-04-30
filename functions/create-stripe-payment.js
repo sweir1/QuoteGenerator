@@ -2,9 +2,30 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const serverless = require('serverless-http');
 const express = require('express');
 const multer = require('multer');
+const cors = require('cors');
 const app = express();
 const upload = multer({ storage: multer.memoryStorage() });
 const { processFile } = require('./upload');
+
+const allowedOrigins = [
+  'http://localhost:8888', // Local development domain, adjust if needed
+  'https://lucky-liger-cadc9d.netlify.app', // Replace with your production domain
+  'https://eduardos-stupendous-site-4488f5.webflow.io',
+  'https://www.typewriters.ai',
+  // Add other allowed domains as needed
+];
+
+const corsOptions = {
+  origin: function (origin, callback) {
+    if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+};
+
+app.use(cors(corsOptions));
 
 app.post('/.netlify/functions/create-stripe-payment', upload.single('file'), async (req, res) => {
   try {
