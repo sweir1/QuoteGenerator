@@ -11,7 +11,8 @@ const allowedOrigins = [
   'http://localhost:8888', // Local development domain, adjust if needed
   'https://lucky-liger-cadc9d.netlify.app', // Replace with your production domain
   'https://eduardos-stupendous-site-4488f5.webflow.io',
-  'https://www.typewriters.ai'
+  'https://www.typewriters.ai',
+  'https://jovial-treacle-09f7aa.netlify.app'
   // Add other allowed domains as needed
 ];
 
@@ -90,7 +91,7 @@ function processFile(file, turnaroundTime, quality) {
   }
 }
 
-app.post('/.netlify/functions/upload', upload.single('file'), (req, res) => {
+app.post('/.netlify/functions/upload', upload.fields([{ name: 'file' }, { name: 'contextFile' }]), (req, res) => {
   const origin = req.headers.origin;
 
   if (allowedOrigins.includes(origin)) {
@@ -99,9 +100,14 @@ app.post('/.netlify/functions/upload', upload.single('file'), (req, res) => {
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   }
 
-  const file = req.file;
+  const file = req.files['file'][0];
   const turnaroundTime = req.body.turnaroundTime;
   const quality = req.body.quality;
+
+  if (!file) {
+    res.status(400).json({ error: 'No file uploaded.' });
+    return;
+  }
 
   processFile(file, turnaroundTime, quality)
     .then(price => {

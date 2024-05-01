@@ -12,6 +12,7 @@ const allowedOrigins = [
   'https://lucky-liger-cadc9d.netlify.app', // Replace with your production domain
   'https://eduardos-stupendous-site-4488f5.webflow.io',
   'https://www.typewriters.ai',
+  'https://jovial-treacle-09f7aa.netlify.app'
   // Add other allowed domains as needed
 ];
 
@@ -29,12 +30,14 @@ app.use(cors(corsOptions));
 
 app.post('/.netlify/functions/create-stripe-payment', upload.single('file'), async (req, res) => {
   try {
-    const file = req.file;
+    const file = req.files['file'][0];
+    const contextFile = req.files['contextFile'] ? req.files['contextFile'][0] : null;
     const turnaroundTime = req.body.turnaroundTime;
     const quality = req.body.quality;
 
     // Call the processFile function to calculate the price
-    const price = await processFile(file, turnaroundTime, quality);
+    const price = await processFile(file, contextFile, turnaroundTime, quality);
+
 
     // Create a Price object
     const priceObject = await stripe.prices.create({
