@@ -271,32 +271,28 @@
                 });
 
                 // Component 2: Generate Stripe payment link
-                function generateStripePaymentLink(e) {
-                  e.preventDefault(); // Prevent form submission from triggering a page refresh
+                function generateStripePaymentLink() {
+                    const form = document.getElementById("uploadForm");
+                    const formData = new FormData(form);
 
-                  const form = document.getElementById("uploadForm");
-                  const formData = new FormData(form);
-
-                  fetch("/.netlify/functions/create-stripe-payment", {
-                    method: "POST",
-                    body: formData,
-                  })
-                    .then((response) => response.json())
-                    .then((data) => {
-                      if (data.error) {
-                        console.error("Error generating Stripe payment link:", data.error);
-                        alert("An error occurred while generating the payment link. Please try again.");
-                      } else {
-                        window.location.href = data.paymentLink;
-                      }
+                    fetch("/.netlify/functions/create-stripe-payment", {
+                        method: "POST",
+                        body: formData,
                     })
-                    .catch((error) => {
-                      console.error("Error generating Stripe payment link:", error);
-                      alert("An error occurred while generating the payment link. Please try again.");
-                    });
+                        .then((response) => response.json())
+                        .then((data) => {
+                            if (data.error) {
+                                console.error("Error generating Stripe payment link:", data.error);
+                                alert("An error occurred while generating the payment link. Please try again.");
+                            } else {
+                                window.location.href = data.paymentLink;
+                            }
+                        })
+                        .catch((error) => {
+                            console.error("Error generating Stripe payment link:", error);
+                            alert("An error occurred while generating the payment link. Please try again.");
+                        });
                 }
-                const form = document.getElementById("uploadForm");
-                    form.addEventListener("submit", generateStripePaymentLink);
             </script>
         </form>
     </body>
