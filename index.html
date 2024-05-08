@@ -3,6 +3,7 @@
     <head>
         <title>Quote Generator</title>
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+        <script src="https://www.google.com/recaptcha/api.js?render=6Le2l9UpAAAAAAqPCVBq6hdumV0KR79KO0UPyQLR"></script>
         <style>
             .custom-file-label {
                 padding: 1.5rem;
@@ -131,9 +132,9 @@
             </div>
 
             <label id="priceElement" class="price-element">Price: $0.00</label>
-
             <button id="payButton" class="pay-button" onclick="generateStripePaymentLink()">Pay with Stripe</button>
 
+            <script src="https://www.google.com/recaptcha/api.js"></script>
             <script>
                 const fileInput = document.getElementById("fileInput");
                 const fileLabel = document.getElementById("fileLabel");
@@ -185,14 +186,6 @@
                     }
                 });
 
-                // Prevent default drag behaviors
-                ["dragenter", "dragover", "dragleave", "drop"].forEach((eventName) => {
-                    document.addEventListener(eventName, preventDefaults, false);
-                });
-
-                // Handle dropped files
-                document.addEventListener("drop", handleDrop, false);
-
                 function preventDefaults(e) {
                     e.preventDefault();
                     e.stopPropagation();
@@ -201,18 +194,27 @@
                 function handleDrop(e) {
                     const dt = e.dataTransfer;
                     const files = dt.files;
+                    const dropZone = e.target.closest(".custom-file-label");
 
-                    if (files.length === 1) {
-                        fileInput.files = files;
-                        fileInput.dispatchEvent(new Event("change"));
-                    } else if (files.length === 2) {
-                        fileInput.files = [files[0]];
-                        fileInput.dispatchEvent(new Event("change"));
+                    if (dropZone) {
+                        const inputElement = dropZone.previousElementSibling;
 
-                        contextFileInput.files = [files[1]];
-                        contextFileInput.dispatchEvent(new Event("change"));
+                        if (files.length === 1) {
+                            inputElement.files = files;
+                            inputElement.dispatchEvent(new Event("change"));
+                        }
                     }
                 }
+
+                const customFileLabels = document.querySelectorAll(".custom-file-label");
+
+                customFileLabels.forEach((label) => {
+                    ["dragenter", "dragover", "dragleave", "drop"].forEach((eventName) => {
+                        label.addEventListener(eventName, preventDefaults, false);
+                    });
+
+                    label.addEventListener("drop", handleDrop, false);
+                });
 
                 // Show/hide context file input based on quality selection
                 qualitySelect.addEventListener("change", function () {
@@ -272,29 +274,39 @@
 
                 // Component 2: Generate Stripe payment link
                 function generateStripePaymentLink(e) {
-                  e.preventDefault(); // Prevent form submission from triggering a page refresh
+                  e.preventDefault();
 
-                  const form = document.getElementById("uploadForm");
-                  const formData = new FormData(form);
+                  grecaptcha.ready(function() {
+                    grecaptcha.execute('6Le2l9UpAAAAAAqPCVBq6hdumV0KR79KO0UPyQLR', { action: 'submit' }).then(function(token) {
+                      const form = document.getElementById("uploadForm");
+                      const formData = new FormData(form);
+                      formData.append("g-recaptcha-response", token);
 
-                  fetch("/.netlify/functions/create-stripe-payment", {
-                    method: "POST",
-                    body: formData,
-                  })
-                    .then((response) => response.json())
-                    .then((data) => {
-                      if (data.error) {
-                        console.error("Error generating Stripe payment link:", data.error);
-                        alert("An error occurred while generating the payment link. Please try again.");
-                      } else {
-                        window.location.href = data.paymentLink;
-                      }
-                    })
-                    .catch((error) => {
-                      console.error("Error generating Stripe payment link:", error);
-                      alert("An error occurred while generating the payment link. Please try again.");
+                      fetch("/.netlify/functions/create-stripe-payment", {
+                        method: "POST",
+                        body: formData,
+                      })
+                        .then((response) => response.json())
+                        .then((data) => {
+                          if (data.error) {
+                            console.error("Error generating Stripe payment link:", data.error);
+                            if (data.error === 'reCAPTCHA verification failed') {
+                              alert('reCAPTCHA verification failed. Please try again.');
+                            } else {
+                              alert('An error occurred while generating the payment link. Please try again.');
+                            }
+                          } else {
+                            window.location.href = data.paymentLink;
+                          }
+                        })
+                        .catch((error) => {
+                          console.error("Error generating Stripe payment link:", error);
+                          alert('An error occurred while generating the payment link. Please try again.');
+                        });
                     });
+                  });
                 }
+
                 const form = document.getElementById("uploadForm");
                     form.addEventListener("submit", generateStripePaymentLink);
             </script>

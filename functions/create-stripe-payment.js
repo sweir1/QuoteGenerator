@@ -8,6 +8,7 @@ const { google } = require("googleapis");
 // const fs = require("fs").promises; // Add this line to require the 'fs' module
 // const path = require("path"); // Add this line to require the 'path' module
 const { Readable } = require("stream"); // Create stream from buffer to upload files to google drive
+const axios = require('axios');
 
 const app = express();
 app.use(express.json());
@@ -39,7 +40,7 @@ const upload = multer({ storage });
 // Function create temporarily folder in google drive
 const driveFolderCreate = async ({
   drive,
-  parentsFolderId = "1YCcOYDFGrIp2owr0HHBD2QwxL1s27PB4" /* Replace it with google drive folder id containing temporary */,
+  parentsFolderId = "1-qp-RFiTBWT80Fv0WUXPD6jcYPivt6Ym" /* Replace it with google drive folder id containing temporary */,
 }) => {
   try {
     // Create a folder in Google Drive to store the uploaded files
@@ -114,6 +115,21 @@ app.post(
         : null;
       const turnaroundTime = req.body.turnaroundTime;
       const quality = req.body.quality;
+
+      // Get the reCAPTCHA token from the request body
+      const recaptchaToken = req.body["g-recaptcha-response"];
+
+      // Verify the reCAPTCHA token
+      const recaptchaSecret = process.env.RECAPTCHA_SECRET_KEY;
+      const verificationUrl = `https://www.google.com/recaptcha/api/siteverify?secret=${recaptchaSecret}&response=${recaptchaToken}`;
+
+      const recaptchaVerificationResponse = await axios.post(verificationUrl);
+      const recaptchaVerificationData = recaptchaVerificationResponse.data;
+
+      if (!recaptchaVerificationData.success || recaptchaVerificationData.score < 0.5) {
+        console.error("reCAPTCHA verification failed");
+        return res.status(400).json({ error: "reCAPTCHA verification failed" });
+      }
 
       if (!file) {
         res.status(400).json({ error: "No file uploaded." });

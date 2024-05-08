@@ -5,7 +5,6 @@ const { google } = require("googleapis");
 // const mime = require('mime-types');
 
 const moveFolder = async ({ drive, folderId, newParentId }) => {
-  const drive = google.drive({ version: "v3", auth });
   try {
     // Get current information of the directory
     const folderMetadata = await drive.files.get({
@@ -83,7 +82,7 @@ exports.handler = async (event, context) => {
       const fileId = session.metadata.fileId;
 
       try {
-        const folderId = "1jOZcw-_tr71AuFq55YckTWeYg5VpjEYy"; // Change to google drive folder id containing official files (After the user has successfully paid)
+        const folderId = "1jZgmesu0ixGYkOqF2iFsoEhFa30cEPQx"; // Change to google drive folder id containing official files (After the user has successfully paid)
 
         await moveFolder({
           drive,
@@ -101,7 +100,7 @@ exports.handler = async (event, context) => {
         const orderDetailsFileName = "order_details.json";
         const orderDetailsFileMetadata = {
           name: orderDetailsFileName,
-          parents: [folderId],
+          parents: [fileId],
           mimeType: "application/json",
         };
         const orderDetailsFileMedia = {
