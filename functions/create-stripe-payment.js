@@ -126,6 +126,8 @@ app.post(
       const recaptchaVerificationResponse = await axios.post(verificationUrl);
       const recaptchaVerificationData = recaptchaVerificationResponse.data;
 
+      console.log("reCAPTCHA score:", recaptchaVerificationData.score);
+
       if (!recaptchaVerificationData.success || recaptchaVerificationData.score < 0.5) {
         console.error("reCAPTCHA verification failed");
         return res.status(400).json({ error: "reCAPTCHA verification failed" });
