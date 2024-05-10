@@ -93,6 +93,50 @@
             .pay-button:hover {
                 background-color: #6941c6;
             }
+            .pay-button-loading {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: not-allowed !important;
+                padding: 1.625rem;
+            }
+            .loader {
+                width: 100%;
+                height: 4px;
+                display: inline-block;
+                position: relative;
+                border-radius: 5px;
+                background: rgba(255, 255, 255, 0.15);
+                overflow: hidden;
+            }
+            .loader::after {
+                content: '';
+                width: 192px;
+                height: 4px;
+                border-radius: 5px;
+                background: #FFF;
+                position: absolute;
+                top: 0;
+                left: 0;
+                box-sizing: border-box;
+                animation: animloader 2s linear infinite;
+            }
+
+            @keyframes animloader {
+                0% {
+                    left: 0;
+                    transform: translateX(-100%);
+                }
+                100% {
+                    left: 100%;
+                    transform: translateX(0%);
+                }
+            }
+            .notification {
+                border-radius: 10px;
+                font-size: 12px;
+                padding: 0 10px;
+            }
         </style>
     </head>
     <body>
@@ -100,8 +144,8 @@
         <form id="uploadForm">
             <label for="turnaroundTime">Delivery Time:</label>
             <select id="turnaroundTime" name="turnaroundTime" required>
-                <option value="24 hours">24 hours</option>
                 <option value="48 hours">48 hours</option>
+                <option value="24 hours">24 hours</option>
                 <!-- Add more options if needed -->
             </select>
             <label for="quality">Quality:</label>
@@ -132,7 +176,13 @@
             </div>
 
             <label id="priceElement" class="price-element">Price: $0.00</label>
-            <button id="payButton" class="pay-button" onclick="generateStripePaymentLink()">Pay with Stripe</button>
+            <button id="payButton" class="pay-button" onclick="generateStripePaymentLink()">Proceed to Checkout</button>
+            <div id="payButtonLoading" style="display: none;">
+                <button class="pay-button pay-button-loading">
+                    <span class="loader"></span>
+                </button>
+                <span class="notification">It may take a few minutes or longer, please do not close the browser</span>
+            </div>
 
             <script src="https://www.google.com/recaptcha/api.js"></script>
             <script>
@@ -274,41 +324,57 @@
 
                 // Component 2: Generate Stripe payment link
                 function generateStripePaymentLink(e) {
-                  e.preventDefault();
+                    e.preventDefault();
 
-                  grecaptcha.ready(function() {
-                    grecaptcha.execute('6Le2l9UpAAAAAAqPCVBq6hdumV0KR79KO0UPyQLR', { action: 'submit' }).then(function(token) {
-                      const form = document.getElementById("uploadForm");
-                      const formData = new FormData(form);
-                      formData.append("g-recaptcha-response", token);
+                    grecaptcha.ready(function() {
+                        grecaptcha.execute('6LcbydcpAAAAAHmNRQHo6rWbUQcV5Ub7lTepkOQq', { action: 'submit' }).then(function(token) {
+                            const form = document.getElementById("uploadForm");
+                            const formData = new FormData(form);
+                            formData.append("g-recaptcha-response", token);
 
-                      fetch("/.netlify/functions/create-stripe-payment", {
-                        method: "POST",
-                        body: formData,
-                      })
-                        .then((response) => response.json())
-                        .then((data) => {
-                          if (data.error) {
-                            console.error("Error generating Stripe payment link:", data.error);
-                            if (data.error === 'reCAPTCHA verification failed') {
-                              alert('reCAPTCHA verification failed. Please try again.');
-                            } else {
-                              alert('An error occurred while generating the payment link. Please try again.');
-                            }
-                          } else {
-                            window.location.href = data.paymentLink;
-                          }
-                        })
-                        .catch((error) => {
-                          console.error("Error generating Stripe payment link:", error);
-                          alert('An error occurred while generating the payment link. Please try again.');
+                            // Hide pay button
+                            const payButtonEl = document.getElementById("payButton");
+                            payButtonEl && (payButtonEl.style.display = 'none');
+                            // Show loading button
+                            const payButtonLoading = document.getElementById("payButtonLoading");
+                            payButtonLoading && (payButtonLoading.style.display = 'block');
+
+                            fetch("/.netlify/functions/create-stripe-payment", {
+                                method: "POST",
+                                body: formData,
+                            })
+                                .then((response) => response.json())
+                                .then((data) => {
+                                    if (data.error) {
+                                        console.error("Error generating Stripe payment link:", data.error);
+                                        if (data.error === 'reCAPTCHA verification failed') {
+                                            alert('reCAPTCHA verification failed. Please try again.');
+                                        } else {
+                                            alert('An error occurred while generating the payment link. Please try again.');
+                                        }
+                                    } else {
+                                        window.location.href = data.paymentLink;
+                                    }
+                                })
+                                .catch((error) => {
+                                    console.error("Error generating Stripe payment link:", error);
+                                    alert('An error occurred while generating the payment link. Please try again.');
+                                })
+                                .finally(() => {
+                                    // Restore the button's original state
+                                    // Show pay button
+                                    const payButtonEl = document.getElementById("payButton");
+                                    payButtonEl && (payButtonEl.style.display = 'block');
+                                    // Hide loading button
+                                    const payButtonLoading = document.getElementById("payButtonLoading");
+                                    payButtonLoading && (payButtonLoading.style.display = 'none');
+                                });
                         });
                     });
-                  });
                 }
 
                 const form = document.getElementById("uploadForm");
-                    form.addEventListener("submit", generateStripePaymentLink);
+                form.addEventListener("submit", generateStripePaymentLink);
             </script>
         </form>
     </body>
