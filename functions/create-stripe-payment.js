@@ -115,6 +115,7 @@ app.post(
         : null;
       const turnaroundTime = req.body.turnaroundTime;
       const quality = req.body.quality;
+      const language = req.body.language;
 
       // Get the reCAPTCHA token from the request body
       const recaptchaToken = req.body["g-recaptcha-response"];
@@ -150,7 +151,7 @@ app.post(
         unit_amount: priceInCents,
         currency: "usd",
         product_data: {
-          name: "Fixed Payment",
+          name: "AI Writing Service",
         },
       });
 
@@ -224,6 +225,7 @@ app.post(
           fileId: driveFolderId, // Replace fileId to driveFolderId (google drive folder id) containing temporary files, used for processing when users make payments
           businessSpecific: quality === "Business specific",
           turnaroundTime: turnaroundTime,
+          language: language, // Add the language to the metadata
         },
       });
 
@@ -264,6 +266,7 @@ app.post("/.netlify/functions/stripe-webhook", async (req, res) => {
       const businessSpecific = session.metadata.businessSpecific;
       const cost = session.amount_total / 100; // Convert from cents to dollars
       const turnaroundTime = session.metadata.turnaroundTime;
+      const language = session.metadata.language;
 
       try {
         // Initialize Google Drive API client
@@ -315,6 +318,7 @@ app.post("/.netlify/functions/stripe-webhook", async (req, res) => {
           businessSpecific,
           cost,
           turnaroundTime,
+          language,
           timestamp: new Date().toISOString(),
         };
         const orderDetailsFileName = "order_details.json";

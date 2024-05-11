@@ -80,6 +80,7 @@ exports.handler = async (event, context) => {
       const cost = session.amount_total / 100; // Convert from cents to dollars
       const turnaroundTime = session.metadata.turnaroundTime;
       const fileId = session.metadata.fileId;
+      const language = session.metadata.language;
 
       try {
         const folderId = "1jZgmesu0ixGYkOqF2iFsoEhFa30cEPQx"; // Change to google drive folder id containing official files (After the user has successfully paid)
@@ -95,6 +96,7 @@ exports.handler = async (event, context) => {
           businessSpecific,
           cost,
           turnaroundTime,
+          language,
           timestamp: new Date().toISOString(),
         };
         const orderDetailsFileName = "order_details.json";
