@@ -3,7 +3,7 @@
     <head>
         <title>Quote Generator</title>
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
-        <script src="https://www.google.com/recaptcha/api.js?render=6Le2l9UpAAAAAAqPCVBq6hdumV0KR79KO0UPyQLR"></script>
+        <script src="https://www.google.com/recaptcha/api.js?render=6LcbydcpAAAAAHmNRQHo6rWbUQcV5Ub7lTepkOQq"></script>
         <style>
             .custom-file-label {
                 padding: 1.5rem;
@@ -340,7 +340,7 @@
                     e.preventDefault();
 
                     grecaptcha.ready(function() {
-                        grecaptcha.execute('6Le2l9UpAAAAAAqPCVBq6hdumV0KR79KO0UPyQLR', { action: 'submit' }).then(function(token) {
+                        grecaptcha.execute('6LcbydcpAAAAAHmNRQHo6rWbUQcV5Ub7lTepkOQq', { action: 'submit' }).then(function(token) {
                             const form = document.getElementById("uploadForm");
                             const formData = new FormData(form);
                             formData.append("g-recaptcha-response", token);
