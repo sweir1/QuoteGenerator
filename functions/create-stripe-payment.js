@@ -192,10 +192,6 @@ app.post(
           // const tempFilePath = path.join("/tmp", tempFileName);
           // return fs.writeFile(tempFilePath, tempFile.buffer);
 
-          // Now click on the "Pay with Stripe" button on the website,
-          // the code will upload the file to the temporary folder in Google drive
-          // In some cases if the file is large in size, loading can take a long time,
-          // which can mislead the user into thinking that the code is not running.
           // Uploading files to google's temporary directory can be done asynchronously by changing "await driveUpload" to "driveUpload",
           // This allows the payment link generation to occur simultaneously while uploading the file.
           await driveUpload({
