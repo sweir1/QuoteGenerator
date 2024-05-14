@@ -223,6 +223,7 @@ app.post(
           turnaroundTime: turnaroundTime,
           language: language, // Add the language to the metadata
         },
+      success_url: "https://www.typewriters.ai/success",
       });
 
       console.log("Stripe payment link created:", paymentLink);
