@@ -36,6 +36,19 @@
     height: auto;
 }
 
+.custom-file-label::before {
+    content: attr(data-label);
+    position: absolute;
+    top: 50%;
+    left: 1.5rem;
+    right: 1.5rem;
+    transform: translateY(-50%);
+    padding-right: 80px;
+    white-space: pre-wrap;
+    text-align: center;
+    z-index: 0;
+}
+
 .custom-file-input {
     position: absolute;
     top: 0;
