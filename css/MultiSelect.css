@@ -95,8 +95,7 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   color: inherit;
-  font-size: 16px;
-  line-height: 20px;
+  font-size: 14px;
 }
 .multi-select .multi-select-options .multi-select-option.multi-select-selected .multi-select-option-radio, .multi-select .multi-select-options .multi-select-all.multi-select-selected .multi-select-option-radio {
   border-color: #40c979;
@@ -129,7 +128,7 @@
   margin: 10px 10px 5px 10px;
   width: 100%;
   outline: none;
-  font-size: 16px;
+  font-size: 14px;
 }
 .multi-select .multi-select-options .multi-select-search::placeholder {
   color: #b2b5b9;
@@ -144,6 +143,6 @@
   display: flex;
   align-items: center;
   width: 100%;
-  font-size: 16px;
+  font-size: 14px;
   color: #000000;
 }
