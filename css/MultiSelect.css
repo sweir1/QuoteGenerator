@@ -34,7 +34,7 @@
   display: flex;
 }
 .multi-select .multi-select-header .multi-select-header-placeholder {
-  color: #000000;
+  color: #333;
 }
 .multi-select .multi-select-header .multi-select-header-option {
   display: inline-flex;
