@@ -23,15 +23,8 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     }, function(err, t) {
       updateContent();
-      // Initialize MultiSelect after content is updated
-      $('select[data-multi-select]').each(function() {
-        new MultiSelect(this, {
-          placeholder: i18next.t('label.languagePlaceholder'),
-          onChange: function(value, text) {
-            calculatePrice(); // Recalculate price on language change
-          },
-        });
-      });
+      // Reinitialize MultiSelect after translations are applied
+      initializeMultiSelect();
     });
 
   function updateContent() {
@@ -55,6 +48,17 @@ document.addEventListener('DOMContentLoaded', function() {
         $(this).text(function(_, text) {
             return text.replace(/Browse/, translation);
         });
+    });
+  }
+
+  function initializeMultiSelect() {
+    $('select[data-multi-select]').each(function() {
+      new MultiSelect(this, {
+        placeholder: i18next.t('label.languagePlaceholder'),
+        onChange: function(value, text) {
+          calculatePrice(); // Recalculate price on language change
+        }
+      });
     });
   }
 });
