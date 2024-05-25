@@ -14,10 +14,10 @@ document.addEventListener('DOMContentLoaded', function() {
         }
       },
       backend: {
-        loadPath: 'locales/{{lng}}.json'
+        loadPath: 'https://cdn.jsdelivr.net/gh/table681/QuoteGenerator@95b590b87bc4a014d42419152998dcc028591f04/locales/{{lng}}.json'
       },
       load: 'currentOnly',
-      languageDetector: {
+      detection: {
         order: ['querystring', 'cookie', 'localStorage', 'navigator'],
         lookupQuerystring: 'lng'
       }
