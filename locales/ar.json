@@ -1,0 +1,45 @@
+{
+    "label": {
+        "turnaroundTime": "وقت الاستجابة",
+        "quality": "الجودة",
+        "language": "اللغة المطلوبة",
+        "fileUpload": "رفع الملف",
+        "context": "السياق",
+        "fileInput": "اختر ملفًا أو اسحبه وأفلته",
+        "contextFileInput": "اختر ملف السياق أو اسحبه وأفلته",
+        "price": "السعر: ${{price}}",
+        "languagePlaceholder": "اختر اللغة",
+        "browseButton": "تصفح"
+    },
+    "priceFormat": {
+        "decimalSeparator": ".",
+        "currencySpacing": " "
+    },
+    "button": {
+        "checkout": "تابع إلى الدفع"
+    },
+    "notification": {
+        "processing": "قد يستغرق ذلك بضع ثوانٍ أو أكثر، يُرجى عدم إغلاق المتصفح"
+    },
+    "option": {
+        "turnaroundTime": {
+            "48hours": "48 ساعة",
+            "24hours": "24 ساعة"
+        },
+        "quality": {
+            "standard": "قياسي",
+            "business": "خاص بالأعمال"
+        },
+        "language": {
+            "english": "الإنجليزية",
+            "french": "الفرنسية",
+            "italian": "الإيطالية",
+            "german": "الألمانية",
+            "swissGerman": "الألمانية السويسرية",
+            "portuguese": "البرتغالية",
+            "simplifiedChinese": "الصينية المبسطة",
+            "japanese": "اليابانية",
+            "arabic": "العربية"
+        }
+    }
+}

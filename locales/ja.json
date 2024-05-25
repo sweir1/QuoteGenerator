@@ -1,0 +1,45 @@
+{
+    "label": {
+        "turnaroundTime": "納期",
+        "quality": "品質",
+        "language": "希望する言語",
+        "fileUpload": "ファイルアップロード",
+        "context": "コンテキスト",
+        "fileInput": "ファイルを選択またはドラッグ＆ドロップ",
+        "contextFileInput": "コンテキストファイルを選択するか、ドラッグ＆ドロップしてください",
+        "price": "価格：${{price}}",
+        "languagePlaceholder": "言語を選択",
+        "browseButton": "参照"
+    },
+    "priceFormat": {
+        "decimalSeparator": ".",
+        "currencySpacing": ""
+    },
+    "button": {
+        "checkout": "決済に進む"
+    },
+    "notification": {
+        "processing": "処理には数秒から数分かかる場合があります。ブラウザを閉じないでください。"
+    },
+    "option": {
+        "turnaroundTime": {
+            "48hours": "48時間",
+            "24hours": "24時間"
+        },
+        "quality": {
+            "standard": "標準",
+            "business": "ビジネス特化型"
+        },
+        "language": {
+            "english": "英語",
+            "french": "フランス語",
+            "italian": "イタリア語",
+            "german": "ドイツ語",
+            "swissGerman": "スイスドイツ語",
+            "portuguese": "ポルトガル語",
+            "simplifiedChinese": "簡体字中国語",
+            "japanese": "日本語",
+            "arabic": "アラビア語"
+        }
+    }
+}

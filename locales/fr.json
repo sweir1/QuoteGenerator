@@ -1,0 +1,45 @@
+{
+    "label": {
+        "turnaroundTime": "Délai de livraison",
+        "quality": "Qualité",
+        "language": "Langue souhaitée",
+        "fileUpload": "Téléchargement de fichier",
+        "context": "Contexte",
+        "fileInput": "Choisissez un fichier ou faites-le glisser et déposez-le",
+        "contextFileInput": "Choisissez un fichier de contexte ou faites-le glisser et déposez-le",
+        "price": "Prix: {{price}} $",
+        "languagePlaceholder": "Sélectionnez la/les langue(s)",
+        "browseButton": "Parcourir"
+    },
+    "priceFormat": {
+        "decimalSeparator": ",",
+        "currencySpacing": " "
+    },
+    "button": {
+        "checkout": "Passer à la caisse"
+    },
+    "notification": {
+        "processing": "Cela peut prendre quelques secondes ou plus, veuillez ne pas fermer le navigateur"
+    },
+    "option": {
+        "turnaroundTime": {
+            "48hours": "48 heures",
+            "24hours": "24 heures"
+        },
+        "quality": {
+            "standard": "Standard",
+            "business": "Spécifique à l'entreprise"
+        },
+        "language": {
+            "english": "Anglais",
+            "french": "Français",
+            "italian": "Italien",
+            "german": "Allemand",
+            "swissGerman": "Allemand suisse",
+            "portuguese": "Portugais",
+            "simplifiedChinese": "Chinois simplifié",
+            "japanese": "Japonais",
+            "arabic": "Arabe"
+        }
+    }
+}

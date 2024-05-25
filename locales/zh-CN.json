@@ -1,0 +1,45 @@
+{
+    "label": {
+        "turnaroundTime": "周转时间",
+        "quality": "质量",
+        "language": "所需语言",
+        "fileUpload": "文件上传",
+        "context": "上下文",
+        "fileInput": "选择文件或拖放文件",
+        "contextFileInput": "选择上下文文件或拖放文件",
+        "price": "价格：${{price}}",
+        "languagePlaceholder": "选择语言",
+        "browseButton": "浏览"
+    },
+    "priceFormat": {
+        "decimalSeparator": ".",
+        "currencySpacing": ""
+    },
+    "button": {
+        "checkout": "继续结账"
+    },
+    "notification": {
+        "processing": "可能需要几秒钟或更长时间，请不要关闭浏览器"
+    },
+    "option": {
+        "turnaroundTime": {
+            "48hours": "48 小时",
+            "24hours": "24 小时"
+        },
+        "quality": {
+            "standard": "标准",
+            "business": "商务专用"
+        },
+        "language": {
+            "english": "英语",
+            "french": "法语",
+            "italian": "意大利语",
+            "german": "德语",
+            "swissGerman": "瑞士德语",
+            "portuguese": "葡萄牙语",
+            "simplifiedChinese": "简体中文",
+            "japanese": "日语",
+            "arabic": "阿拉伯语"
+        }
+    }
+}

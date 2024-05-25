@@ -1,0 +1,45 @@
+{
+    "label": {
+        "turnaroundTime": "Duurloufziit",
+        "quality": "Qualität",
+        "language": "Gwünschti Schpraach",
+        "fileUpload": "Datei ufelade",
+        "context": "Kontext",
+        "fileInput": "Wähled Sie e Datei oder ziehed Sie sie per Drag & Drop",
+        "contextFileInput": "Wähled Sie e Kontextdatei oder ziehed Sie sie per Drag & Drop",
+        "price": "Priis: {{price}} $",
+        "languagePlaceholder": "Sprach(e) uswähle",
+        "browseButton": "Duresueche"
+    },
+    "priceFormat": {
+        "decimalSeparator": ",",
+        "currencySpacing": " "
+    },
+    "button": {
+        "checkout": "Wiiter zum Checkout"
+    },
+    "notification": {
+        "processing": "Das chan es paar Sekunde oder länger dauerä, bitte schlüsse Sie de Browser nöd"
+    },
+    "option": {
+        "turnaroundTime": {
+            "48hours": "48 Stundä",
+            "24hours": "24 Stundä"
+        },
+        "quality": {
+            "standard": "Standard",
+            "business": "Gschäftsspezifisch"
+        },
+        "language": {
+            "english": "Englisch",
+            "french": "Französisch",
+            "italian": "Italienisch",
+            "german": "Deutsch",
+            "swissGerman": "Schwiizerdütsch",
+            "portuguese": "Portugiesisch",
+            "simplifiedChinese": "Vereinfachts Chineesisch",
+            "japanese": "Japanisch",
+            "arabic": "Arabisch"
+        }
+    }
+}

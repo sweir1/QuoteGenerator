@@ -43,7 +43,7 @@
     left: 0;
     right: 0;
     transform: translateY(-50%);
-    padding: 0 100px 0 1.5rem;
+    padding: 0 calc(100px + 1.5rem) 0 1.5rem;
     white-space: pre-wrap;
     text-align: center;
     z-index: 0;
@@ -63,22 +63,21 @@
 }
 
 .file-upload-container {
-    margin-bottom: 1rem;
+    margin-bottom: .5rem;
+    min-height: 120px;
+    position: relative; /* This ensures z-index works */
+    z-index: 0;
 }
 
 .context-label,
 .price-element {
     font-size: 1rem;
     font-weight: 600;
-    color: #333;
+    color: #212529;
     display: block;
     text-align: center;
-    margin-top: 1.5rem;
-    margin-bottom: 1rem;
-    margin-top: 2.5rem;
     margin-bottom: 0.5rem;
     font-weight: bold;
-    padding-top: 1rem;
 }
 
 .pay-button {
@@ -93,7 +92,6 @@
     cursor: pointer;
     transition: background-color 0.3s ease;
     text-align: center;
-    margin-top: 10px;
 }
 
 .pay-button:hover {
