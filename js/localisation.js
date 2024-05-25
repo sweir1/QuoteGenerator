@@ -5,16 +5,16 @@ document.addEventListener('DOMContentLoaded', function() {
     .init({
       debug: false,
       fallbackLng: (code) => {
-        if (code.includes('-')) {
-          // Region-specific language code (e.g., 'fr-CH')
+        if (typeof code === 'string' && code.includes('-')) {
           return [code, code.split('-')[0], 'en'];
-        } else {
-          // Language-only code (e.g., 'fr')
+        } else if (typeof code === 'string') {
           return [code, 'en'];
+        } else {
+          return ['en'];
         }
       },
       backend: {
-        loadPath: 'https://cdn.jsdelivr.net/gh/table681/QuoteGenerator@95b590b87bc4a014d42419152998dcc028591f04/locales/{{lng}}.json'
+        loadPath: 'https://cdn.jsdelivr.net/gh/table681/QuoteGenerator@d31f71d88ec8198b463441c14c85e679c9656ed9/locales/{{lng}}.json'
       },
       load: 'currentOnly',
       detection: {
@@ -23,6 +23,15 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     }, function(err, t) {
       updateContent();
+      // Initialize MultiSelect after content is updated
+      $('select[data-multi-select]').each(function() {
+        new MultiSelect(this, {
+          placeholder: i18next.t('label.languagePlaceholder'),
+          onChange: function(value, text) {
+            calculatePrice(); // Recalculate price on language change
+          },
+        });
+      });
     });
 
   function updateContent() {
@@ -38,11 +47,6 @@ document.addEventListener('DOMContentLoaded', function() {
         var key = $(this).data('i18n');
         var translation = i18next.t(key);
         $(this).text(translation);
-    });
-    // Update placeholder for MultiSelect
-    $('select[data-multi-select]').each(function() {
-        $(this).data('placeholder', i18next.t('label.languagePlaceholder'));
-        new MultiSelect(this, { placeholder: i18next.t('label.languagePlaceholder') });
     });
     // Translate browse button text
     $('.custom-file-label').each(function() {
