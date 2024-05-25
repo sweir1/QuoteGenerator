@@ -1,0 +1,45 @@
+{
+    "label": {
+        "turnaroundTime": "Turnaround Time",
+        "quality": "Quality",
+        "language": "Desired Language",
+        "fileUpload": "File Upload",
+        "context": "Context",
+        "fileInput": "Choose a file or drag and drop it",
+        "contextFileInput": "Choose a context file or drag and drop it",
+        "price": "Price: ${{price}}",
+        "languagePlaceholder": "Select language(s)",
+        "browseButton": "Browse"
+    },
+    "priceFormat": {
+        "decimalSeparator": ".",
+        "currencySpacing": " "
+    },
+    "button": {
+        "checkout": "Proceed to Checkout"
+    },
+    "notification": {
+        "processing": "This may take a few seconds or more, please do not close the browser"
+    },
+    "option": {
+        "turnaroundTime": {
+            "48hours": "48 hours",
+            "24hours": "24 hours"
+        },
+        "quality": {
+            "standard": "Standard",
+            "business": "Business Specific"
+        },
+        "language": {
+            "english": "English",
+            "french": "French",
+            "italian": "Italian",
+            "german": "German",
+            "swissGerman": "Swiss German",
+            "portuguese": "Portuguese",
+            "simplifiedChinese": "simplified Chinese",
+            "japanese": "Japanese",
+            "arabic": "Arabic"
+        }
+    }
+}
