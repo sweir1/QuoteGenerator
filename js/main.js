@@ -13,18 +13,18 @@ function calculatePrice() {
   }
 
   if (selectedLanguages.length === 0) {
-    priceElement.textContent = "$0.00";
+    updatePriceElement(0.00);
     return;
   }
 
   formData.append("language", selectedLanguages.join(","));
 
   if (fileInput.files.length === 0) {
-    priceElement.textContent = "$0.00";
+    updatePriceElement(0.00);
     return;
   }
 
-  priceElement.textContent = "Calculating...";
+  priceElement.textContent = i18next.t('label.price', { price: "Calculating..." });
 
   fetch("/.netlify/functions/upload", {
     method: "POST",
@@ -39,17 +39,39 @@ function calculatePrice() {
   .then((data) => {
     if (data.error) {
       console.error("Backend Error:", data.error);
-      priceElement.textContent = "Error calculating price. Please try again.";
+      priceElement.textContent = i18next.t('label.price', { price: "Error" });
     } else {
-      const amount = data.amount;
-      priceElement.textContent = `$${amount}`;
+      const amount = parseFloat(data.amount);
+      if (isNaN(amount)) {
+        throw new Error('Invalid amount received');
+      }
+      updatePriceElement(amount);
     }
   })
   .catch((error) => {
     console.error("Error:", error);
-    priceElement.textContent = `An error occurred: ${error.message}. Please try again.`;
+    priceElement.textContent = i18next.t('label.price', { price: "Error" });
   });
 }
+
+function updatePriceElement(amount) {
+  const formattedPrice = formatPrice(amount.toFixed(2), i18next.language);
+  const priceText = i18next.t('label.price', { price: formattedPrice });
+  const priceElement = document.getElementById("priceElement");
+  if (priceElement) {
+    priceElement.textContent = priceText;
+  }
+}
+
+function formatPrice(price, language) {
+  const priceFormat = i18next.t('priceFormat', { returnObjects: true });
+  const decimalSeparator = priceFormat.decimalSeparator || '.';
+  const currencySpacing = priceFormat.currencySpacing || '';
+
+  const formattedPrice = price.replace('.', decimalSeparator);
+  return formattedPrice + currencySpacing;
+}
+
 
 document.addEventListener('DOMContentLoaded', function() {
   const fileInput = document.getElementById("fileInput");
@@ -148,14 +170,30 @@ document.addEventListener('DOMContentLoaded', function() {
 
   turnaroundTimeSelect.addEventListener("change", calculatePrice);
 
-  form.addEventListener("submit", function(e) {
-    e.preventDefault();
-    generateStripePaymentLink(e);
-  });
 });
 
 function generateStripePaymentLink(e) {
   e.preventDefault();
+
+  const selectedLanguages = Array.from(document.querySelectorAll(".multi-select-option.multi-select-selected")).map((option) => option.dataset.value);
+  const fileInput = document.getElementById("fileInput");
+  const qualitySelect = document.getElementById("quality");
+  const contextFileInput = document.getElementById("contextfileInput");
+
+  if (selectedLanguages.length === 0) {
+    alert("Please select at least one language.");
+    return;
+  }
+
+  if (fileInput.files.length === 0) {
+    alert("Please select a file to upload.");
+    return;
+  }
+
+  if (qualitySelect.value === "Business specific" && contextFileInput.files.length === 0) {
+    alert("Please select a context file.");
+    return;
+  }
 
   grecaptcha.ready(function () {
     grecaptcha.execute("6LcbydcpAAAAAHmNRQHo6rWbUQcV5Ub7lTepkOQq", { action: "submit" }).then(function (token) {
