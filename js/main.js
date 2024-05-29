@@ -183,6 +183,12 @@ function generateStripePaymentLink(e) {
             const formData = new FormData(form);
             formData.append("g-recaptcha-response", token);
 
+            formData.append("language", selectedLanguages.join(","));
+            if (fileInput.files.length === 0) {
+                updatePriceElement(0.0);
+                return;
+            }
+
             const payButtonEl = document.getElementById("payButton");
             payButtonEl && (payButtonEl.style.display = "none");
             const payButtonLoading = document.getElementById("payButtonLoading");
