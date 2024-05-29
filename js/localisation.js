@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
       },
       backend: {
-        loadPath: 'https://cdn.jsdelivr.net/gh/table681/QuoteGenerator@d31f71d88ec8198b463441c14c85e679c9656ed9/locales/{{lng}}.json'
+        loadPath: 'https://cdn.jsdelivr.net/gh/table681/QuoteGenerator@5c5303f215f7166fcbd3be8d86d9fcc7f29fd8c6/locales/{{lng}}.json'
       },
       load: 'currentOnly',
       detection: {
@@ -40,6 +40,12 @@ document.addEventListener('DOMContentLoaded', function() {
         var key = $(this).data('i18n');
         var translation = i18next.t(key);
         $(this).text(translation);
+    });
+    // Translate drag and drop labels
+    $('.fileLabel[data-i18n]').each(function() {
+      var key = $(this).data('i18n');
+      var translation = i18next.t(key);
+      $(this).text(translation);
     });
     // Translate browse button text
     $('.custom-file-label').each(function() {
