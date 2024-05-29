@@ -9,7 +9,9 @@
         "contextFileInput": "Wählen Sie eine Kontextdatei oder ziehen Sie sie per Drag&Drop",
         "price": "Preis: {{price}} $",
         "languagePlaceholder": "Sprache(n) auswählen",
-        "browseButton": "Durchsuchen"
+        "dragDrop": "Drag & Drop",
+        "orBrowse": "oder ",
+        "browseButton": "durchsuchen"
     },
     "priceFormat": {
         "decimalSeparator": ",",

@@ -9,7 +9,9 @@
         "contextFileInput": "Escolha um ficheiro de contexto ou arraste e largue-o",
         "price": "Preço: {{price}} $",
         "languagePlaceholder": "Selecionar idioma(s)",
-        "browseButton": "Navegar"
+        "dragDrop": "Arrastar & Soltar",
+        "orBrowse": "ou ",
+        "browseButton": "navegar"
     },
     "priceFormat": {
         "decimalSeparator": ",",

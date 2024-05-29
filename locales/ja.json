@@ -9,6 +9,8 @@
         "contextFileInput": "コンテキストファイルを選択するか、ドラッグ＆ドロップしてください",
         "price": "価格：${{price}}",
         "languagePlaceholder": "言語を選択",
+        "dragDrop": "ドラッグ & ドロップ",
+        "orBrowse": "または ",
         "browseButton": "参照"
     },
     "priceFormat": {

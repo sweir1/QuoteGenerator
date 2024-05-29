@@ -9,6 +9,8 @@
         "contextFileInput": "اختر ملف السياق أو اسحبه وأفلته",
         "price": "السعر: ${{price}}",
         "languagePlaceholder": "اختر اللغة",
+        "dragDrop": "سحب وإفلات",
+        "orBrowse": "أو ",
         "browseButton": "تصفح"
     },
     "priceFormat": {

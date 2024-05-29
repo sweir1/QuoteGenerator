@@ -9,6 +9,8 @@
         "contextFileInput": "选择上下文文件或拖放文件",
         "price": "价格：${{price}}",
         "languagePlaceholder": "选择语言",
+        "dragDrop": "拖放",
+        "orBrowse": "或 ",
         "browseButton": "浏览"
     },
     "priceFormat": {

@@ -9,7 +9,9 @@
         "contextFileInput": "Scegliere un file di contesto o trascinarlo",
         "price": "Prezzo: {{prezzo}} $",
         "languagePlaceholder": "Selezionare la lingua (o le lingue)",
-        "browseButton": "Sfogliare"
+        "dragDrop": "Trascina & Rilascia",
+        "orBrowse": "o ",
+        "browseButton": "sfoglia"
     },
     "priceFormat": {
         "decimalSeparator": ",",
