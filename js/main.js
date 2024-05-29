@@ -1,11 +1,11 @@
 function calculatePrice() {
   const form = document.getElementById("uploadForm");
   const formData = new FormData(form);
-
   const selectedLanguages = Array.from(document.querySelectorAll(".multi-select-option.multi-select-selected")).map((option) => option.dataset.value);
-
   const priceElement = document.getElementById("priceElement");
   const fileInput = document.getElementById("fileInput");
+  const qualitySelect = document.getElementById("quality");
+  const contextFileInput = document.getElementById("contextfileInput");
 
   if (!priceElement) {
     console.error("Price element not found");
@@ -20,6 +20,11 @@ function calculatePrice() {
   formData.append("language", selectedLanguages.join(","));
 
   if (fileInput.files.length === 0) {
+    updatePriceElement(0.00);
+    return;
+  }
+
+  if (qualitySelect.value === "Business specific" && contextFileInput.files.length === 0) {
     updatePriceElement(0.00);
     return;
   }
