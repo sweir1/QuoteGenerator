@@ -4,15 +4,20 @@ function calculatePrice() {
 
   const selectedLanguages = Array.from(document.querySelectorAll(".multi-select-option.multi-select-selected")).map((option) => option.dataset.value);
 
+  const priceElement = document.getElementById("priceElement");
+  const fileInput = document.getElementById("fileInput");
+
+  if (!priceElement) {
+    console.error("Price element not found");
+    return;
+  }
+
   if (selectedLanguages.length === 0) {
-    const priceElement = document.getElementById("priceElement");
     priceElement.textContent = "$0.00";
     return;
   }
 
   formData.append("language", selectedLanguages.join(","));
-
-  const priceElement = document.getElementById("priceElement");
 
   if (fileInput.files.length === 0) {
     priceElement.textContent = "$0.00";
@@ -48,82 +53,86 @@ function calculatePrice() {
 
 document.addEventListener('DOMContentLoaded', function() {
   const fileInput = document.getElementById("fileInput");
-  const fileLabel = document.getElementById("fileLabel");
-  const contextFileInput = document.getElementById("contextFileInput");
-  const contextFileLabel = document.getElementById("contextFileLabel");
-  const qualitySelect = document.getElementById("quality");
+  const fileLabel = document.querySelector("#file-dragDropBox .fileLabel");
+  const contextFileInput = document.getElementById("contextfileInput");
   const contextFileContainer = document.getElementById("contextFileContainer");
+  const qualitySelect = document.getElementById("quality");
   const turnaroundTimeSelect = document.getElementById("turnaroundTime");
-
-  // Update label text when file is selected
-  fileInput.addEventListener("change", function (e) {
-    if (fileInput.files.length === 0) {
-      fileLabel.textContent = "Choose file or drag and drop";
-      calculatePrice();
-    } else {
-      const fileName = e.target.files[0].name;
-      const allowedExtensions = [".doc", ".docx", ".pdf", ".xls", ".xlsx", ".ppt", ".pptx", ".txt"];
-      const fileExtension = fileName.slice(fileName.lastIndexOf(".")).toLowerCase();
-
-      if (allowedExtensions.includes(fileExtension)) {
-        fileLabel.textContent = fileName;
-        calculatePrice();
-      } else {
-        fileInput.value = "";
-        fileLabel.textContent = "Choose file or drag and drop";
-        alert("Only Word, PDF, Excel, PPT, and text files are allowed.");
-      }
-    }
-  });
-
-  // Update label text when context file is selected
-  contextFileInput.addEventListener("change", function (e) {
-    if (contextFileInput.files.length === 0) {
-      contextFileLabel.textContent = "Choose context file or drag and drop";
-    } else {
-      const fileName = e.target.files[0].name;
-      const allowedExtensions = [".doc", ".docx", ".pdf", ".xls", ".xlsx", ".ppt", ".pptx", ".txt"];
-      const fileExtension = fileName.slice(fileName.lastIndexOf(".")).toLowerCase();
-
-      if (allowedExtensions.includes(fileExtension)) {
-        contextFileLabel.textContent = fileName;
-      } else {
-        contextFileInput.value = "";
-        contextFileLabel.textContent = "Choose context file or drag and drop";
-        alert("Only Word, PDF, Excel, PPT, and text files are allowed.");
-      }
-    }
-  });
+  const dropArea = document.querySelector('.file-drag-area');
+  const contextDropArea = document.querySelector('.context-drag-area');
 
   function preventDefaults(e) {
     e.preventDefault();
     e.stopPropagation();
   }
 
-  function handleDrop(e) {
+  function handleDrop(e, inputElement) {
     const dt = e.dataTransfer;
     const files = dt.files;
-    const dropZone = e.target.closest(".custom-file-label");
 
-    if (dropZone) {
-      const inputElement = dropZone.previousElementSibling;
-
-      if (files.length === 1) {
-        inputElement.files = files;
-        inputElement.dispatchEvent(new Event("change"));
-      }
+    if (files.length === 1) {
+      inputElement.files = files;
+      inputElement.dispatchEvent(new Event("change"));
     }
   }
 
-  const customFileLabels = document.querySelectorAll(".custom-file-label");
+  function handleFileSelect(e, dropArea) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const validExtensions = [
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      'application/pdf',
+      'application/vnd.ms-excel',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      'application/vnd.ms-powerpoint',
+      'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+      'text/plain'
+    ];
 
-  customFileLabels.forEach((label) => {
-    ["dragenter", "dragover", "dragleave", "drop"].forEach((eventName) => {
-      label.addEventListener(eventName, preventDefaults, false);
+    if (!validExtensions.includes(file.type)) {
+      alert('This is not a supported file format.');
+      dropArea.classList.remove('active');
+      return;
+    }
+
+    const fileNameElement = `<span class="file-name">${file.name}</span>`;
+    dropArea.classList.add('active');
+    dropArea.querySelectorAll('.fileLabel, .button').forEach(el => el.classList.add('hidden'));
+
+    let existingFileNameElement = dropArea.querySelector('.file-name');
+    if (existingFileNameElement) {
+      existingFileNameElement.textContent = file.name;
+    } else {
+      dropArea.insertAdjacentHTML('beforeend', fileNameElement);
+    }
+    calculatePrice();
+  }
+
+  function setupDropArea(dropArea, inputElement) {
+    dropArea.addEventListener('dragover', (event) => {
+      preventDefaults(event);
+      dropArea.classList.add('active');
     });
 
-    label.addEventListener("drop", handleDrop, false);
-  });
+    dropArea.addEventListener('dragleave', (event) => {
+      preventDefaults(event);
+      dropArea.classList.remove('active');
+    });
+
+    dropArea.addEventListener('drop', (event) => {
+      preventDefaults(event);
+      handleDrop(event, inputElement);
+    });
+
+    dropArea.addEventListener('click', () => inputElement.click());
+  }
+
+  setupDropArea(dropArea, fileInput);
+  setupDropArea(contextDropArea, contextFileInput);
+
+  fileInput.addEventListener('change', (e) => handleFileSelect(e, dropArea));
+  contextFileInput.addEventListener('change', (e) => handleFileSelect(e, contextDropArea));
 
   qualitySelect.addEventListener("change", function () {
     if (qualitySelect.value === "Business specific") {
@@ -131,60 +140,57 @@ document.addEventListener('DOMContentLoaded', function() {
     } else {
       contextFileContainer.style.display = "none";
       contextFileInput.value = "";
-      contextFileLabel.textContent = "Choose context file or drag and drop";
+      contextDropArea.querySelector('.file-name')?.remove();
+      contextDropArea.querySelectorAll('.fileLabel, .button').forEach(el => el.classList.remove('hidden'));
     }
     calculatePrice();
   });
 
-  turnaroundTimeSelect.addEventListener("change", function () {
-    calculatePrice();
-  });
+  turnaroundTimeSelect.addEventListener("change", calculatePrice);
 
-  function generateStripePaymentLink(e) {
+  form.addEventListener("submit", function(e) {
     e.preventDefault();
+    generateStripePaymentLink(e);
+  });
+});
 
-    grecaptcha.ready(function () {
-      grecaptcha.execute("6LcbydcpAAAAAHmNRQHo6rWbUQcV5Ub7lTepkOQq", { action: "submit" }).then(function (token) {
-        const form = document.getElementById("uploadForm");
-        const formData = new FormData(form);
-        formData.append("g-recaptcha-response", token);
+function generateStripePaymentLink(e) {
+  e.preventDefault();
 
-        const payButtonEl = document.getElementById("payButton");
-        payButtonEl && (payButtonEl.style.display = "none");
-        const payButtonLoading = document.getElementById("payButtonLoading");
-        payButtonLoading && (payButtonLoading.style.display = "block");
+  grecaptcha.ready(function () {
+    grecaptcha.execute("6LcbydcpAAAAAHmNRQHo6rWbUQcV5Ub7lTepkOQq", { action: "submit" }).then(function (token) {
+      const form = document.getElementById("uploadForm");
+      const formData = new FormData(form);
+      formData.append("g-recaptcha-response", token);
 
-        fetch("/.netlify/functions/create-stripe-payment", {
-          method: "POST",
-          body: formData,
-        })
-        .then((response) => response.json())
-        .then((data) => {
-          if (data.error) {
-            console.error("Error generating Stripe payment link:", data.error);
-            if (data.error === "reCAPTCHA verification failed") {
-              alert("reCAPTCHA verification failed. Please try again.");
-            } else {
-              alert("An error occurred while generating the payment link. Please try again.");
-            }
-          } else {
-            window.location.href = data.paymentLink;
-          }
-        })
-        .catch((error) => {
-          console.error("Error generating Stripe payment link:", error);
+      const payButtonEl = document.getElementById("payButton");
+      payButtonEl && (payButtonEl.style.display = "none");
+      const payButtonLoading = document.getElementById("payButtonLoading");
+      payButtonLoading && (payButtonLoading.style.display = "block");
+
+      fetch("/.netlify/functions/create-stripe-payment", {
+        method: "POST",
+        body: formData,
+      })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.error) {
+          console.error("Error generating Stripe payment link:", data.error);
           alert("An error occurred while generating the payment link. Please try again.");
-        })
-        .finally(() => {
-          const payButtonEl = document.getElementById("payButton");
-          payButtonEl && (payButtonEl.style.display = "block");
-          const payButtonLoading = document.getElementById("payButtonLoading");
-          payButtonLoading && (payButtonLoading.style.display = "none");
-        });
+        } else {
+          window.location.href = data.paymentLink;
+        }
+      })
+      .catch((error) => {
+        console.error("Error generating Stripe payment link:", error);
+        alert("An error occurred while generating the payment link. Please try again.");
+      })
+      .finally(() => {
+        const payButtonEl = document.getElementById("payButton");
+        payButtonEl && (payButtonEl.style.display = "block");
+        const payButtonLoading = document.getElementById("payButtonLoading");
+        payButtonLoading && (payButtonLoading.style.display = "none");
       });
     });
-  }
-
-  const form = document.getElementById("uploadForm");
-  form.addEventListener("submit", generateStripePaymentLink);
-});
+  });
+}
