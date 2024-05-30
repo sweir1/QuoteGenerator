@@ -85,13 +85,6 @@ const driveUpload = async ({ drive, driveFolderId, fileName, fileMineType, buffe
 };
 
 app.post("/.netlify/functions/create-stripe-payment", upload.fields([{ name: "file" }, { name: "contextFile" }]), async (req, res) => {
-    // Handle warm-up request
-    if (req.body && req.body.warmup) {
-        res.status(200).json({ message: "Function warmed up" });
-        return;
-    }
-
-
     try {
         console.log("Starting create-stripe-payment function");
         const file = req.files["file"][0];

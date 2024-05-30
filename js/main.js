@@ -67,6 +67,30 @@ function formatPrice(price, language) {
 
 document.addEventListener("DOMContentLoaded", function () {
     // Function to ping the endpoints
+    function warmUpFunctions() {
+        // Warm up upload function
+        try {
+            fetch("https://jovial-treacle-09f7aa.netlify.app/.netlify/functions/upload");
+        } catch (error) {
+            // Ignore any errors
+        }
+
+        // Warm up create-stripe-payment function
+        try {
+            fetch("https://jovial-treacle-09f7aa.netlify.app/.netlify/functions/create-stripe-payment");
+        } catch (error) {
+            // Ignore any errors
+        }
+
+        // Warm up stripe-webhook function
+        try {
+            fetch("https://jovial-treacle-09f7aa.netlify.app/.netlify/functions/stripe-webhook");
+        } catch (error) {
+            // Ignore any errors
+        }
+    }
+
+    warmUpFunctions();
 
     const fileInput = document.getElementById("fileInput");
     const fileLabel = document.querySelector("#file-dragDropBox .fileLabel");

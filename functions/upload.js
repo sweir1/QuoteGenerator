@@ -102,15 +102,6 @@ app.post("/.netlify/functions/upload", upload.fields([{ name: "file" }, { name: 
         res.setHeader("Access-Control-Allow-Headers", "Content-Type");
     }
 
-    // Handle warm-up request
-	if (req.body && Buffer.isBuffer(req.body)) {
-	    const jsonData = JSON.parse(req.body.toString());
-	    if (jsonData.warmup) {
-	        res.status(200).json({ message: "Function warmed up" });
-	        return;
-	    }
-	}
-
 	const file = req.files["file"][0];
     const turnaroundTime = req.body.turnaroundTime;
     const quality = req.body.quality;
