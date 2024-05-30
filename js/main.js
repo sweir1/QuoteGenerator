@@ -67,13 +67,6 @@ function formatPrice(price, language) {
 
 document.addEventListener("DOMContentLoaded", function () {
     // Function to ping the endpoints
-    function warmUpFunctions() {
-        // Warm up upload function
-        fetch("https://jovial-treacle-09f7aa.netlify.app/.netlify/functions/upload");
-        fetch("https://jovial-treacle-09f7aa.netlify.app/.netlify/functions/create-stripe-payment");
-    }
-
-    warmUpFunctions();
 
     const fileInput = document.getElementById("fileInput");
     const fileLabel = document.querySelector("#file-dragDropBox .fileLabel");
