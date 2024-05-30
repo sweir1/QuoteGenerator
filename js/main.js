@@ -71,18 +71,26 @@ document.addEventListener("DOMContentLoaded", function () {
         // Warm up upload function
         fetch("https://jovial-treacle-09f7aa.netlify.app/.netlify/functions/upload", {
             mode: "no-cors"
+        }).catch(error => {
+            // Silently catch and ignore the error
         });
 
         // Warm up create-stripe-payment function
         fetch("https://jovial-treacle-09f7aa.netlify.app/.netlify/functions/create-stripe-payment", {
             mode: "no-cors"
+        }).catch(error => {
+            // Silently catch and ignore the error
         });
 
         // Warm up stripe-webhook function
         fetch("https://jovial-treacle-09f7aa.netlify.app/.netlify/functions/stripe-webhook", {
             mode: "no-cors"
+        }).catch(error => {
+            // Silently catch and ignore the error
         });
     }
+
+    warmUpFunctions()
 
     const fileInput = document.getElementById("fileInput");
     const fileLabel = document.querySelector("#file-dragDropBox .fileLabel");
