@@ -19,7 +19,7 @@ function calculatePrice() {
     }
     priceElement.textContent = i18next.t("label.price", { price: "Calculating..." });
 
-    fetch("/.netlify/functions/upload", {
+    fetch("https://jovial-treacle-09f7aa.netlify.app/.netlify/functions/upload", {
         method: "POST",
         body: formData,
     })
@@ -69,7 +69,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Function to ping the endpoints
     function warmUpFunctions() {
         // Warm up upload function
-        fetch("/.netlify/functions/upload", {
+        fetch("https://jovial-treacle-09f7aa.netlify.app/.netlify/functions/upload", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -86,7 +86,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
 
         // Warm up create-stripe-payment function
-        fetch("/.netlify/functions/create-stripe-payment", {
+        fetch("https://jovial-treacle-09f7aa.netlify.app/.netlify/functions/create-stripe-payment", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -233,7 +233,7 @@ function generateStripePaymentLink(e) {
             const payButtonLoading = document.getElementById("payButtonLoading");
             payButtonLoading && (payButtonLoading.style.display = "block");
 
-            fetch("/.netlify/functions/create-stripe-payment", {
+            fetch("https://jovial-treacle-09f7aa.netlify.app/.netlify/functions/create-stripe-payment", {
                 method: "POST",
                 body: formData,
             })
