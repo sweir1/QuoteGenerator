@@ -66,6 +66,45 @@ function formatPrice(price, language) {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
+    // Function to ping the endpoints
+    function warmUpFunctions() {
+        // Warm up upload function
+        fetch("/.netlify/functions/upload", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ warmup: true }),
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Failed to warm up upload function");
+            }
+        })
+        .catch(error => {
+            console.error("Error warming up upload function:", error);
+        });
+
+        // Warm up create-stripe-payment function
+        fetch("/.netlify/functions/create-stripe-payment", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ warmup: true }),
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Failed to warm up create-stripe-payment function");
+            }
+        })
+        .catch(error => {
+            console.error("Error warming up create-stripe-payment function:", error);
+        });
+    }
+
+    warmUpFunctions();
+
     const fileInput = document.getElementById("fileInput");
     const fileLabel = document.querySelector("#file-dragDropBox .fileLabel");
     const contextFileInput = document.getElementById("contextfileInput");
