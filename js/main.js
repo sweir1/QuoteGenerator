@@ -4,6 +4,8 @@ function calculatePrice() {
     const selectedLanguages = Array.from(document.querySelectorAll(".multi-select-option.multi-select-selected")).map((option) => option.dataset.value);
     const priceElement = document.getElementById("priceElement");
     const fileInput = document.getElementById("fileInput");
+    const wordElement = document.getElementById("wordElement");
+    const word = wordElement ? wordElement.getAttribute("data-word") : "Calculating";
     if (!priceElement) {
         console.error("Price element not found");
         return;
@@ -17,7 +19,10 @@ function calculatePrice() {
         updatePriceElement(0.0);
         return;
     }
-    priceElement.textContent = "Price: Calculating...";
+    const priceValueElement = document.getElementById("priceValue");
+    if (priceValueElement) {
+        priceValueElement.textContent = `${word}...`;
+    }
 
     fetch("https://lucky-liger-cadc9d.netlify.app/.netlify/functions/upload", {
         method: "POST",
@@ -48,10 +53,9 @@ function calculatePrice() {
 }
 
 function updatePriceElement(amount) {
-    const formattedPrice = '$' + amount.toFixed(2);
-    const priceElement = document.getElementById("priceElement");
-    if (priceElement) {
-        priceElement.textContent = "Price: " + formattedPrice;
+    const priceValueElement = document.getElementById("priceValue");
+    if (priceValueElement) {
+        priceValueElement.textContent = amount.toFixed(2);
     }
 }
 
