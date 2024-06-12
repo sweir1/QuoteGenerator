@@ -117,10 +117,10 @@ app.post("/.netlify/functions/upload", upload.fields([{ name: "file" }, { name: 
     }
     // Ensure languages is split into an array
     const languageArray = Array.isArray(languages) ? languages : languages.split(",");
-    processFile(file, turnaroundTime, quality, languageArray)
-        .then((price) => {
-            res.json({ amount: price.toFixed(2) });
-        })
+	processFile(file, turnaroundTime, quality, languageArray)
+	    .then((price) => {
+	        res.json({ amount: price });
+	    })
         .catch((error) => {
             console.error("Error processing file:", error);
             res.status(500).json({ error: "Failed to process the file." });

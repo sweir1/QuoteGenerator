@@ -17,9 +17,9 @@ function calculatePrice() {
         updatePriceElement(0.0);
         return;
     }
-    priceElement.textContent = i18next.t("label.price", { price: "Calculating..." });
+    priceElement.textContent = "Price: Calculating...";
 
-    fetch("https://jovial-treacle-09f7aa.netlify.app/.netlify/functions/upload", {
+    fetch("https://lucky-liger-cadc9d.netlify.app/.netlify/functions/upload", {
         method: "POST",
         body: formData,
     })
@@ -32,7 +32,7 @@ function calculatePrice() {
         .then((data) => {
             if (data.error) {
                 console.error("Backend Error:", data.error);
-                priceElement.textContent = i18next.t("label.price", { price: "Error" });
+                priceElement.textContent = "Price: Error";
             } else {
                 const amount = parseFloat(data.amount);
                 if (isNaN(amount)) {
@@ -43,26 +43,16 @@ function calculatePrice() {
         })
         .catch((error) => {
             console.error("Error:", error);
-            priceElement.textContent = i18next.t("label.price", { price: "Error" });
+            priceElement.textContent = "Price: Error";
         });
 }
 
 function updatePriceElement(amount) {
-    const formattedPrice = formatPrice(amount.toFixed(2), i18next.language);
-    const priceText = i18next.t("label.price", { price: formattedPrice });
+    const formattedPrice = '$' + amount.toFixed(2);
     const priceElement = document.getElementById("priceElement");
     if (priceElement) {
-        priceElement.textContent = priceText;
+        priceElement.textContent = "Price: " + formattedPrice;
     }
-}
-
-function formatPrice(price, language) {
-    const priceFormat = i18next.t("priceFormat", { returnObjects: true });
-    const decimalSeparator = priceFormat.decimalSeparator || ".";
-    const currencySpacing = priceFormat.currencySpacing || "";
-
-    const formattedPrice = price.replace(".", decimalSeparator);
-    return formattedPrice + currencySpacing;
 }
 
 document.addEventListener("DOMContentLoaded", function () {
