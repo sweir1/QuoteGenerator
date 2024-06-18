@@ -64,27 +64,27 @@ document.addEventListener("DOMContentLoaded", function () {
     function warmUpFunctions() {
         // Warm up upload function
         fetch("https://jovial-treacle-09f7aa.netlify.app/.netlify/functions/upload", {
-            mode: "no-cors"
-        }).catch(error => {
+            mode: "no-cors",
+        }).catch((error) => {
             // Silently catch and ignore the error
         });
 
         // Warm up create-stripe-payment function
         fetch("https://jovial-treacle-09f7aa.netlify.app/.netlify/functions/create-stripe-payment", {
-            mode: "no-cors"
-        }).catch(error => {
+            mode: "no-cors",
+        }).catch((error) => {
             // Silently catch and ignore the error
         });
 
         // Warm up stripe-webhook function
         fetch("https://jovial-treacle-09f7aa.netlify.app/.netlify/functions/stripe-webhook", {
-            mode: "no-cors"
-        }).catch(error => {
+            mode: "no-cors",
+        }).catch((error) => {
             // Silently catch and ignore the error
         });
     }
 
-    warmUpFunctions()
+    warmUpFunctions();
 
     const fileInput = document.getElementById("fileInput");
     const fileLabel = document.querySelector("#file-dragDropBox .fileLabel");
@@ -181,6 +181,7 @@ function generateStripePaymentLink(e) {
     const fileInput = document.getElementById("fileInput");
     const qualitySelect = document.getElementById("quality");
     const contextFileInput = document.getElementById("contextfileInput");
+    const redirectUrl = document.getElementById("redirectUrl").value; // Get the redirect URL
 
     if (selectedLanguages.length === 0) {
         alert("Please select at least one language.");
@@ -202,6 +203,7 @@ function generateStripePaymentLink(e) {
             const form = document.getElementById("uploadForm");
             const formData = new FormData(form);
             formData.append("g-recaptcha-response", token);
+            formData.append("redirectUrl", redirectUrl); // Append the redirect URL
 
             formData.append("language", selectedLanguages.join(","));
             if (fileInput.files.length === 0) {

@@ -92,6 +92,7 @@ app.post("/.netlify/functions/create-stripe-payment", upload.fields([{ name: "fi
         const turnaroundTime = req.body.turnaroundTime;
         const quality = req.body.quality;
         const languages = req.body.language;
+        const redirectUrl = req.body.redirectUrl || "https://www.typewriters.ai/success"; // Get the redirect URL
 
         // Get the reCAPTCHA token from the request body
         const recaptchaToken = req.body["g-recaptcha-response"];
@@ -201,7 +202,7 @@ app.post("/.netlify/functions/create-stripe-payment", upload.fields([{ name: "fi
             after_completion: {
                 type: "redirect",
                 redirect: {
-                    url: "https://www.typewriters.ai/success",
+                    url: redirectUrl, // Use the passed redirect URL
                 },
             },
         });
