@@ -93,6 +93,7 @@ app.post("/.netlify/functions/create-stripe-payment", upload.fields([{ name: "fi
         const quality = req.body.quality;
         const languages = req.body.language;
         const redirectUrl = req.body.redirectUrl || "https://www.typewriters.ai/success"; // Get the redirect URL
+        console.log("Success URL:", redirectUrl);
 
         // Get the reCAPTCHA token from the request body
         const recaptchaToken = req.body["g-recaptcha-response"];
