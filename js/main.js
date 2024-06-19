@@ -203,7 +203,7 @@ function generateStripePaymentLink(e) {
             const form = document.getElementById("uploadForm");
             const formData = new FormData(form);
             formData.append("g-recaptcha-response", token);
-            formData.append("redirectUrl", redirectUrl); // Append the redirect URL
+            formData.append("redirectUrl", redirectUrl); // Append the redirect URL to the form data
 
             formData.append("language", selectedLanguages.join(","));
             if (fileInput.files.length === 0) {
