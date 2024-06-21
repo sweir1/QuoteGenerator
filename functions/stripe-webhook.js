@@ -8,26 +8,25 @@ const nodemailer = require("nodemailer");
 
 const moveFolder = async ({ drive, folderId, newParentId }) => {
     try {
-        // Get current information of the directory
         const folderMetadata = await drive.files.get({
             fileId: folderId,
             fields: "parents",
         });
 
-        // Get the list of current parents of the directory
         const currentParents = folderMetadata.data.parents.join(",");
 
-        // Move folder into new folder by deleting old parent and adding new parent
-        await drive.files.update({
+        const updatedFolder = await drive.files.update({
             fileId: folderId,
             addParents: newParentId,
             removeParents: currentParents,
-            fields: "id, parents",
+            fields: "id, parents, webViewLink",
         });
 
         console.log(`Folder ${folderId} has been moved to ${newParentId}.`);
+        return updatedFolder.data.webViewLink;
     } catch (error) {
-        throw Error(`Error moving folder: ${error}`);
+        console.error(`Error moving folder: ${error}`);
+        return null;
     }
 };
 
@@ -43,25 +42,80 @@ const deleteFolder = async ({ drive, folderId }) => {
     }
 };
 
-// Add this function to send email
 async function sendOrderEmail(orderDetails) {
     let transporter = nodemailer.createTransport({
         host: "smtp.gmail.com",
         port: 587,
-        secure: false, // Use TLS
+        secure: false,
         auth: {
             user: process.env.EMAIL_USER,
             pass: process.env.EMAIL_PASS,
         },
     });
 
+    // Prepare the folder link section
+    let folderLinkSection = '';
+    if (orderDetails.folderLink) {
+        folderLinkSection = `
+        <p>
+            <a href="${orderDetails.folderLink}" style="display: inline-block; padding: 10px 20px; background-color: #3498db; color: #ffffff; text-decoration: none; border-radius: 5px;">View Order Folder</a>
+        </p>
+        `;
+    }
+
+    const htmlContent = `
+    <html>
+        <head>
+            <style>
+                body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+                .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+                h1 { color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px; }
+                h2 { color: #2980b9; }
+                .order-details { background-color: #f9f9f9; border: 1px solid #ddd; padding: 15px; border-radius: 5px; margin-bottom: 20px; }
+                .order-details p { margin: 5px 0; }
+                .highlight { font-weight: bold; color: #2c3e50; }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <h1>New Order Received - Typewriters.ai</h1>
+                <p>A new translation order has been received and paid for. Here are the details:</p>
+
+                <div class="order-details">
+                    <h2>Order Information</h2>
+                    <p><span class="highlight">Order ID:</span> ${orderDetails.stripeSessionId}</p>
+                    <p><span class="highlight">Timestamp:</span> ${new Date(orderDetails.timestamp).toLocaleString()}</p>
+                    <p><span class="highlight">Amount:</span> $${orderDetails.amountTotal.toFixed(2)} ${orderDetails.currency.toUpperCase()}</p>
+                    <p><span class="highlight">Turnaround Time:</span> ${orderDetails.turnaroundTime}</p>
+                    <p><span class="highlight">Language:</span> ${orderDetails.language}</p>
+                    <p><span class="highlight">Business Specific:</span> ${orderDetails.businessSpecific}</p>
+                    <p><span class="highlight">Translation File:</span> ${orderDetails.translationFileName}</p>
+                    <p><span class="highlight">Context File:</span> ${orderDetails.contextFileName}</p>
+                </div>
+
+                <div class="order-details">
+                    <h2>Customer Information</h2>
+                    <p><span class="highlight">Email:</span> ${orderDetails.customerEmail}</p>
+                    <p><span class="highlight">Name:</span> ${orderDetails.customerName}</p>
+                    <p><span class="highlight">Phone:</span> ${orderDetails.customerPhone}</p>
+                </div>
+
+                <p>Please process this order according to the specified requirements.</p>
+                <p>For full order details, please check the order_details.json file in Google Drive.</p>
+
+                ${folderLinkSection}
+            </div>
+        </body>
+    </html>
+    `;
+
     try {
         let info = await transporter.sendMail({
-            from: '"Your Company" <' + process.env.EMAIL_USER + '>',
+            from: '"Typewriters.ai" <' + process.env.EMAIL_USER + '>',
             to: process.env.NOTIFICATION_EMAIL,
-            subject: "New Order Received",
-            text: JSON.stringify(orderDetails, null, 2),
-            html: `<h1>New Order Details</h1><pre>${JSON.stringify(orderDetails, null, 2)}</pre>`,
+            subject: "New Translation Order Received - Typewriters.ai",
+            text: `New order received for Typewriters.ai. Order ID: ${orderDetails.stripeSessionId}, Amount: $${orderDetails.amountTotal.toFixed(2)} ${orderDetails.currency.toUpperCase()}, Language: ${orderDetails.language}. ${orderDetails.folderLink ? `View order folder: ${orderDetails.folderLink}` : ''} Please check the HTML version for full details.`,
+            html: htmlContent,
         });
 
         console.log("Order notification email sent successfully");
@@ -111,12 +165,11 @@ exports.handler = async (event, context) => {
             try {
                 const folderId = "1jZgmesu0ixGYkOqF2iFsoEhFa30cEPQx"; // Change to google drive folder id containing official files (After the user has successfully paid)
 
-                await moveFolder({
+                const folderLink = await moveFolder({
                     drive,
                     folderId: fileId,
                     newParentId: folderId,
                 });
-
                 // Store the additional details in a file in Google Drive
                 const orderDetails = {
                     businessSpecific,
@@ -143,6 +196,7 @@ exports.handler = async (event, context) => {
                     paymentMethod: session.payment_method_types.join(', '),
                     subscriptionId: session.subscription || 'Not a subscription',
                     invoiceId: session.invoice || 'No invoice',
+                    orderDetails.folderLink = folderLink;
                 };
 
                 const orderDetailsFileName = "order_details.json";
