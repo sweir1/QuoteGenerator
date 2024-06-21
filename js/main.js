@@ -211,11 +211,6 @@ function generateStripePaymentLink(e) {
                 return;
             }
 
-            for (const [key, value] of formData.entries()) {
-                console.log(`${key}: ${value}`);
-            }
-            console.log(redirectUrl);
-
             const payButtonEl = document.getElementById("payButton");
             payButtonEl && (payButtonEl.style.display = "none");
             const payButtonLoading = document.getElementById("payButtonLoading");
