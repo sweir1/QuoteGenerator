@@ -196,13 +196,13 @@ exports.handler = async (event, context) => {
                     paymentMethod: session.payment_method_types.join(', '),
                     subscriptionId: session.subscription || 'Not a subscription',
                     invoiceId: session.invoice || 'No invoice',
-                    orderDetails.folderLink = folderLink;
                 };
+                orderDetails.folderLink = folderLink;
 
                 const orderDetailsFileName = "order_details.json";
                 const orderDetailsFileMetadata = {
                     name: orderDetailsFileName,
-                    parents: [fileId],
+                    parents: [folderId], // Changed from fileId to folderId
                     mimeType: "application/json",
                 };
                 const orderDetailsFileMedia = {
