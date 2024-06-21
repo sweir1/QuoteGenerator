@@ -100,7 +100,6 @@ async function sendOrderEmail(orderDetails) {
                     <p><span class="highlight">Phone:</span> ${orderDetails.customerPhone}</p>
                 </div>
 
-                <p>Please process this order according to the specified requirements.</p>
                 <p>For full order details, please check the order_details.json file in Google Drive.</p>
 
                 ${folderLinkSection}
@@ -202,7 +201,7 @@ exports.handler = async (event, context) => {
                 const orderDetailsFileName = "order_details.json";
                 const orderDetailsFileMetadata = {
                     name: orderDetailsFileName,
-                    parents: [folderId], // Changed from fileId to folderId
+                    parents: [fileId], // Changed from fileId to folderId
                     mimeType: "application/json",
                 };
                 const orderDetailsFileMedia = {
