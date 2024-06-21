@@ -202,7 +202,7 @@ app.post("/.netlify/functions/create-stripe-payment", upload.fields([{ name: "fi
             after_completion: {
                 type: "redirect",
                 redirect: {
-                    url: redirectUrl + '?transaction_id={{CHECKOUT_SESSION_ID}}&amount={{AMOUNT_TOTAL}}',
+                    url: redirectUrl + '?order_id={CHECKOUT_SESSION_ID}',
                 },
             },
         });
