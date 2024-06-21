@@ -96,28 +96,51 @@ exports.handler = async (event, context) => {
                     translationFileName, // Add translation file name to order details
                     contextFileName, // Add context file name to order details
                     timestamp: new Date().toISOString(),
+                    // Additional Stripe information
+                    stripeSessionId: session.id,
+                    customerEmail: session.customer_details?.email || 'Not provided',
+                    customerName: session.customer_details?.name || 'Not provided',
+                    customerPhone: session.customer_details?.phone || 'Not provided',
+                    paymentIntent: session.payment_intent,
+                    amountSubtotal: session.amount_subtotal / 100,
+                    amountTotal: session.amount_total / 100,
+                    currency: session.currency,
+                    paymentStatus: session.payment_status,
+                    customerAddress: session.customer_details?.address || 'Not provided',
+                    shippingAddress: session.shipping?.address || 'Not provided',
+                    shippingName: session.shipping?.name || 'Not provided',
+                    createdAt: new Date(session.created * 1000).toISOString(),
+                    expiresAt: new Date(session.expires_at * 1000).toISOString(),
+                    paymentMethod: session.payment_method_types.join(', '),
+                    subscriptionId: session.subscription || 'Not a subscription',
+                    invoiceId: session.invoice || 'No invoice',
                 };
+
                 const orderDetailsFileName = "order_details.json";
                 const orderDetailsFileMetadata = {
                     name: orderDetailsFileName,
                     parents: [fileId],
                     mimeType: "application/json",
                 };
+
                 const orderDetailsFileMedia = {
                     mimeType: "application/json",
                     body: JSON.stringify(orderDetails),
                 };
+
                 await drive.files.create({
                     resource: orderDetailsFileMetadata,
                     media: orderDetailsFileMedia,
                     fields: "id",
                 });
+
                 console.log("Order details stored in Google Drive");
 
                 return {
                     statusCode: 200,
                     body: "Payment successfully processed and files uploaded to Google Drive",
                 };
+
             } catch (error) {
                 console.error("Error uploading files to Google Drive:", error);
                 return {
@@ -125,6 +148,7 @@ exports.handler = async (event, context) => {
                     body: "Payment processed, but an error occurred while uploading files to Google Drive",
                 };
             }
+
         } else {
             console.log("Payment not completed");
             const fileId = session.metadata.fileId;
