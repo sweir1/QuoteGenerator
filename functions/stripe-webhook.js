@@ -1,5 +1,7 @@
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 const { google } = require("googleapis");
+const nodemailer = require("nodemailer");
+
 // const fs = require("fs").promises;
 // const path = require("path");
 // const mime = require('mime-types');
@@ -40,6 +42,34 @@ const deleteFolder = async ({ drive, folderId }) => {
         console.error("Error deleting folder:", error);
     }
 };
+
+// Add this function to send email
+async function sendOrderEmail(orderDetails) {
+    let transporter = nodemailer.createTransport({
+        host: "smtp.gmail.com",
+        port: 587,
+        secure: false, // Use TLS
+        auth: {
+            user: process.env.EMAIL_USER,
+            pass: process.env.EMAIL_PASS,
+        },
+    });
+
+    try {
+        let info = await transporter.sendMail({
+            from: '"Your Company" <' + process.env.EMAIL_USER + '>',
+            to: process.env.NOTIFICATION_EMAIL,
+            subject: "New Order Received",
+            text: JSON.stringify(orderDetails, null, 2),
+            html: `<h1>New Order Details</h1><pre>${JSON.stringify(orderDetails, null, 2)}</pre>`,
+        });
+
+        console.log("Order notification email sent successfully");
+        console.log("Message ID:", info.messageId);
+    } catch (error) {
+        console.error("Error sending order notification email:", error);
+    }
+}
 
 exports.handler = async (event, context) => {
     const sig = event.headers["stripe-signature"];
@@ -96,7 +126,6 @@ exports.handler = async (event, context) => {
                     translationFileName, // Add translation file name to order details
                     contextFileName, // Add context file name to order details
                     timestamp: new Date().toISOString(),
-                    // Additional Stripe information
                     stripeSessionId: session.id,
                     customerEmail: session.customer_details?.email || 'Not provided',
                     customerName: session.customer_details?.name || 'Not provided',
@@ -122,33 +151,31 @@ exports.handler = async (event, context) => {
                     parents: [fileId],
                     mimeType: "application/json",
                 };
-
                 const orderDetailsFileMedia = {
                     mimeType: "application/json",
                     body: JSON.stringify(orderDetails),
                 };
-
                 await drive.files.create({
                     resource: orderDetailsFileMetadata,
                     media: orderDetailsFileMedia,
                     fields: "id",
                 });
-
                 console.log("Order details stored in Google Drive");
+
+                // Send email with order details
+                await sendOrderEmail(orderDetails);
 
                 return {
                     statusCode: 200,
-                    body: "Payment successfully processed and files uploaded to Google Drive",
+                    body: "Payment successfully processed, files uploaded to Google Drive, and notification email sent",
                 };
-
             } catch (error) {
                 console.error("Error uploading files to Google Drive:", error);
                 return {
                     statusCode: 500,
-                    body: "Payment processed, but an error occurred while uploading files to Google Drive",
+                    body: "Payment processed, but an error occurred while uploading files to Google Drive or sending notification",
                 };
             }
-
         } else {
             console.log("Payment not completed");
             const fileId = session.metadata.fileId;
