@@ -90,8 +90,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const fileLabel = document.querySelector("#file-dragDropBox .fileLabel");
     const contextFileInput = document.getElementById("contextfileInput");
     const contextFileContainer = document.getElementById("contextFileContainer");
-    const qualitySelect = document.getElementById("quality");
-    const turnaroundTimeSelect = document.getElementById("turnaroundTime");
+    const qualitySelect = window.qualitySelect;
+    const turnaroundTimeSelect = window.turnaroundTimeSelect;
     const dropArea = document.querySelector(".file-drag-area");
     const contextDropArea = document.querySelector(".context-drag-area");
 
@@ -159,19 +159,39 @@ document.addEventListener("DOMContentLoaded", function () {
     fileInput.addEventListener("change", (e) => handleFileSelect(e, dropArea));
     contextFileInput.addEventListener("change", (e) => handleFileSelect(e, contextDropArea));
 
-    qualitySelect.addEventListener("change", function () {
-        if (qualitySelect.value === "Business specific") {
-            contextFileContainer.style.display = "block";
-        } else {
-            contextFileContainer.style.display = "none";
-            contextFileInput.value = "";
-            contextDropArea.querySelector(".file-name")?.remove();
-            contextDropArea.querySelectorAll(".fileLabel, .button").forEach((el) => el.classList.remove("hidden"));
-        }
-        calculatePrice();
-    });
+    if (qualitySelect) {
+        // Update the onChange handler of the SingleSelect instance
+        qualitySelect.options.onChange = function(value, text) {
+            if (value === "Business specific") {
+                if (contextFileContainer) {
+                    contextFileContainer.style.display = "block";
+                }
+            } else {
+                if (contextFileContainer) {
+                    contextFileContainer.style.display = "none";
+                }
+                if (contextFileInput) {
+                    contextFileInput.value = "";
+                }
+                if (contextDropArea) {
+                    contextDropArea.querySelector(".file-name")?.remove();
+                    contextDropArea.querySelectorAll(".fileLabel, .button").forEach((el) => el.classList.remove("hidden"));
+                }
+            }
+            calculatePrice();
+        };
+    } else {
+        console.warn("Quality select object not found");
+    }
 
-    turnaroundTimeSelect.addEventListener("change", calculatePrice);
+    if (turnaroundTimeSelect) {
+        // Update the onChange handler of the turnaround time SingleSelect instance
+        turnaroundTimeSelect.options.onChange = function(value, text) {
+            calculatePrice();
+        };
+    } else {
+        console.warn("Turnaround time select object not found");
+    }
 });
 
 function generateStripePaymentLink(e) {
@@ -180,16 +200,9 @@ function generateStripePaymentLink(e) {
     const selectedLanguages = Array.from(document.querySelectorAll(".multi-select-option.multi-select-selected")).map((option) => option.dataset.value);
     const fileInput = document.getElementById("fileInput");
     const qualitySelect = window.qualitySelect;
+    const selectedQuality = qualitySelect.selectedValue;
     const contextFileInput = document.getElementById("contextfileInput");
     const redirectUrl = document.getElementById("redirectUrl").value; // Get the redirect URL
-
-    // Get the actual selected value
-    const selectedQuality = qualitySelect.selectedValue;
-    console.log(selectedLanguages)
-    console.log(fileInput)
-    console.log(selectedQuality)
-    console.log(contextFileInput)
-    console.log(redirectUrl)
 
     if (selectedLanguages.length === 0) {
         alert("Please select at least one language.");
