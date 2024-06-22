@@ -268,6 +268,7 @@
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23949ba3' viewBox='0 0 16 16'%3E%3Cpath d='M8 13.1l-8-8 2.1-2.2 5.9 5.9 5.9-5.9 2.1 2.2z'/%3E%3C/svg%3E");
     height: 12px;
     width: 12px;
+    transition: transform 0.3s;
 }
 .multi-select .multi-select-header.multi-select-header-active {
     border-color: #c1c9d0;
@@ -401,4 +402,77 @@
     width: 100%;
     font-size: 14px;
     color: #000000;
+}
+
+.single-select {
+    position: relative;
+    user-select: none;
+    width: 100%;
+}
+.single-select-header {
+    position: relative;
+    display: flex;
+    align-items: center;
+    height: 45px;
+    padding: 0 22px;
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+    background-color: white;
+    cursor: pointer;
+    font-size: 14px;
+    color: #333;
+}
+.single-select-header::after {
+    content: "";
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 12px;
+    height: 12px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23949ba3' viewBox='0 0 16 16'%3E%3Cpath d='M8 13.1l-8-8 2.1-2.2 5.9 5.9 5.9-5.9 2.1 2.2z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    transition: transform 0.3s;
+}
+.single-select-header-active::after {
+    transform: translateY(-50%) rotate(180deg);
+}
+.single-select-options {
+    position: absolute;
+    top: calc(100%);
+    left: 0;
+    right: 0;
+    background: #fff;
+    border-radius: 5px;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1000;
+    display: none;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin-top: 5px;
+}
+.single-select-header-active + .single-select-options {
+    display: block;
+}
+.single-select-option {
+    padding: 0 22px;
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 45px;
+    height: 45px;
+}
+.single-select-option:hover {
+    background-color: #f3f4f7;
+}
+.single-select-selected {
+    color: #40c979;
+}
+.single-select-header-option {
+    display: inline-block;
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }

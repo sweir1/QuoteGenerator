@@ -261,3 +261,108 @@ document.addEventListener("DOMContentLoaded", function () {
         },
     });
 });
+
+class SingleSelect {
+    constructor(element, options = {}) {
+        let defaults = {
+            placeholder: "Select an option",
+            name: "",
+            width: "",
+            height: "",
+            dropdownWidth: "",
+            dropdownHeight: "",
+            data: [],
+            onChange: function () {},
+        };
+        this.options = Object.assign(defaults, options);
+        this.selectElement = typeof element === "string" ? document.querySelector(element) : element;
+        this.name = this.selectElement.getAttribute("name") || "single-select-" + Math.floor(Math.random() * 1000000);
+
+        if (!this.options.data.length) {
+            let options = this.selectElement.querySelectorAll("option");
+            this.options.data = Array.from(options).map(option => ({
+                value: option.value,
+                text: option.textContent,
+                selected: option.selected
+            }));
+        }
+
+        this.element = this._template();
+        this.selectElement.parentNode.replaceChild(this.element, this.selectElement);
+        this._updateSelected();
+        this._eventHandlers();
+    }
+
+    _template() {
+        let optionsHTML = this.options.data.map(item => `
+            <div class="single-select-option${item.selected ? " single-select-selected" : ""}" data-value="${item.value}">
+                <span class="single-select-option-text">${item.text}</span>
+            </div>
+        `).join('');
+
+        let template = `
+            <div class="single-select ${this.name}" style="${this.options.width ? "width:" + this.options.width + ";" : ""}${this.options.height ? "height:" + this.options.height + ";" : ""}">
+                <input type="hidden" name="${this.name}" value="${this.selectedValue || ''}">
+                <div class="single-select-header" style="${this.options.width ? "width:" + this.options.width + ";" : ""}${this.options.height ? "height:" + this.options.height + ";" : ""}">
+                    <span class="single-select-header-placeholder">${this.options.placeholder}</span>
+                </div>
+                <div class="single-select-options" style="${this.options.dropdownWidth ? "width:" + this.options.dropdownWidth + ";" : ""}${this.options.dropdownHeight ? "height:" + this.options.dropdownHeight + ";" : ""}">
+                    ${optionsHTML}
+                </div>
+            </div>
+        `;
+        let element = document.createElement("div");
+        element.innerHTML = template.trim();
+        return element.firstChild;
+    }
+
+    _eventHandlers() {
+        let headerElement = this.element.querySelector(".single-select-header");
+        this.element.querySelectorAll(".single-select-option").forEach((option) => {
+            option.onclick = () => {
+                this.element.querySelectorAll(".single-select-option").forEach(opt => opt.classList.remove("single-select-selected"));
+                option.classList.add("single-select-selected");
+                headerElement.innerHTML = `<span class="single-select-header-option">${option.querySelector(".single-select-option-text").innerHTML}</span>`;
+                this.element.querySelector('input[type="hidden"]').value = option.dataset.value;
+                this.options.onChange(option.dataset.value, option.querySelector(".single-select-option-text").innerHTML, option);
+                headerElement.classList.remove("single-select-header-active");
+            };
+        });
+        headerElement.onclick = () => headerElement.classList.toggle("single-select-header-active");
+        document.addEventListener("click", (event) => {
+            if (!event.target.closest("." + this.name)) {
+                headerElement.classList.remove("single-select-header-active");
+            }
+        });
+    }
+
+    _updateSelected() {
+        let selectedOption = this.options.data.find(item => item.selected);
+        if (selectedOption) {
+            this.element.querySelector(".single-select-header").innerHTML = `<span class="single-select-header-option">${selectedOption.text}</span>`;
+            this.element.querySelector('input[type="hidden"]').value = selectedOption.value;
+        }
+    }
+
+    get selectedValue() {
+        return this.options.data.find(item => item.selected)?.value || '';
+    }
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    new SingleSelect("#turnaroundTime", {
+        placeholder: "Select delivery time",
+        onChange: function (value, text) {
+            console.log("Delivery time changed:", text);
+            calculatePrice(); // Assuming you have this function
+        },
+    });
+
+    new SingleSelect("#quality", {
+        placeholder: "Select quality",
+        onChange: function (value, text) {
+            console.log("Quality changed:", text);
+            calculatePrice(); // Assuming you have this function
+        },
+    });
+});
