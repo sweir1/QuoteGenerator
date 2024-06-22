@@ -276,6 +276,7 @@ class SingleSelect {
         };
         this.options = Object.assign(defaults, options);
         this.selectElement = typeof element === "string" ? document.querySelector(element) : element;
+        this.originalSelect = this.selectElement;
         this.name = this.selectElement.getAttribute("name") || "single-select-" + Math.floor(Math.random() * 1000000);
 
         if (!this.options.data.length) {
@@ -323,9 +324,15 @@ class SingleSelect {
                 this.element.querySelectorAll(".single-select-option").forEach(opt => opt.classList.remove("single-select-selected"));
                 option.classList.add("single-select-selected");
                 headerElement.innerHTML = `<span class="single-select-header-option">${option.querySelector(".single-select-option-text").innerHTML}</span>`;
-                this.element.querySelector('input[type="hidden"]').value = option.dataset.value;
-                this.options.onChange(option.dataset.value, option.querySelector(".single-select-option-text").innerHTML, option);
+                let selectedValue = option.dataset.value;
+                this.element.querySelector('input[type="hidden"]').value = selectedValue;
+                this.originalSelect.value = selectedValue;
+                this.options.onChange(selectedValue, option.querySelector(".single-select-option-text").innerHTML, option);
                 headerElement.classList.remove("single-select-header-active");
+
+                // Trigger change event on the original select element
+                const event = new Event('change', { bubbles: true });
+                this.originalSelect.dispatchEvent(event);
             };
         });
         headerElement.onclick = () => headerElement.classList.toggle("single-select-header-active");
@@ -347,22 +354,35 @@ class SingleSelect {
     get selectedValue() {
         return this.options.data.find(item => item.selected)?.value || '';
     }
+
+    setValue(value) {
+        const option = this.element.querySelector(`.single-select-option[data-value="${value}"]`);
+        if (option) {
+            option.click();
+        }
+    }
 }
 
 document.addEventListener("DOMContentLoaded", function () {
-    new SingleSelect("#turnaroundTime", {
+    window.turnaroundTimeSelect = new SingleSelect("#turnaroundTime", {
         placeholder: "Select delivery time",
         onChange: function (value, text) {
             console.log("Delivery time changed:", text);
-            calculatePrice(); // Assuming you have this function
+            calculatePrice();
         },
     });
 
-    new SingleSelect("#quality", {
+    window.qualitySelect = new SingleSelect("#quality", {
         placeholder: "Select quality",
         onChange: function (value, text) {
             console.log("Quality changed:", text);
-            calculatePrice(); // Assuming you have this function
+            calculatePrice();
+            const contextFileContainer = document.getElementById("contextFileContainer");
+            if (value === "Business specific") {
+                contextFileContainer.style.display = "block";
+            } else {
+                contextFileContainer.style.display = "none";
+            }
         },
     });
 });
