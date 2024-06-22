@@ -179,9 +179,17 @@ function generateStripePaymentLink(e) {
 
     const selectedLanguages = Array.from(document.querySelectorAll(".multi-select-option.multi-select-selected")).map((option) => option.dataset.value);
     const fileInput = document.getElementById("fileInput");
-    const qualitySelect = document.getElementById("quality");
+    const qualitySelect = window.qualitySelect;
     const contextFileInput = document.getElementById("contextfileInput");
     const redirectUrl = document.getElementById("redirectUrl").value; // Get the redirect URL
+
+    // Get the actual selected value
+    const selectedQuality = qualitySelect.selectedValue;
+    console.log(selectedLanguages)
+    console.log(fileInput)
+    console.log(selectedQuality)
+    console.log(contextFileInput)
+    console.log(redirectUrl)
 
     if (selectedLanguages.length === 0) {
         alert("Please select at least one language.");
@@ -193,7 +201,7 @@ function generateStripePaymentLink(e) {
         return;
     }
 
-    if (qualitySelect.value === "Business specific" && contextFileInput.files.length === 0) {
+    if (selectedQuality.value === "Business specific" && contextFileInput.files.length === 0) {
         alert("Please select a context file.");
         return;
     }

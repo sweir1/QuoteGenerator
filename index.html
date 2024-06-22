@@ -71,6 +71,7 @@
 
             <label id="priceElement" class="price-element">Price: $<span id="priceValue">0.00</span></label>
             <input type="hidden" id="wordElement" data-word="Calculating">
+            <input type="hidden" id="redirectUrl" value="https://www.typewriters.ai/success"> <!-- Add this line -->
             <button id="payButton" class="pay-button" onclick="generateStripePaymentLink(event)">Proceed to Checkout</button>
             <div id="payButtonLoading" style="display: none">
                 <button class="pay-button pay-button-loading">

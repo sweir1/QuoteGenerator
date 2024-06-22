@@ -375,7 +375,6 @@ document.addEventListener("DOMContentLoaded", function () {
     window.qualitySelect = new SingleSelect("#quality", {
         placeholder: "Select quality",
         onChange: function (value, text) {
-            console.log("Quality changed:", text);
             calculatePrice();
             const contextFileContainer = document.getElementById("contextFileContainer");
             if (value === "Business specific") {
