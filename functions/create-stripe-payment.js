@@ -13,7 +13,7 @@ const axios = require("axios");
 const app = express();
 app.use(express.json());
 
-const allowedOrigins = ["http://localhost:8888", "https://lucky-liger-cadc9d.netlify.app", "https://eduardos-stupendous-site-4488f5.webflow.io", "https://www.typewriters.ai", "https://jovial-treacle-09f7aa.netlify.app"];
+const allowedOrigins = ["http://localhost:8888", "https://lucky-liger-cadc9d.netlify.app", "https://eduardos-stupendous-site-4488f5.webflow.io", "https://www.typewriters.ai", "https://jovial-treacle-09f7aa.netlify.app", "https://www.typewriters.io"];
 
 const corsOptions = {
     origin: function (origin, callback) {

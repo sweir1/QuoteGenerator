@@ -78,7 +78,7 @@ async function sendOrderEmail(orderDetails) {
         </head>
         <body>
             <div class="container">
-                <h1>New Order Received - Typewriters.ai</h1>
+                <h1>New Order Received - Typewriters.io</h1>
                 <p>A new translation order has been received and paid for. Here are the details:</p>
 
                 <div class="order-details">
@@ -110,10 +110,10 @@ async function sendOrderEmail(orderDetails) {
 
     try {
         let info = await transporter.sendMail({
-            from: '"Typewriters.ai" <' + process.env.EMAIL_USER + '>',
+            from: '"Typewriters.io" <' + process.env.EMAIL_USER + '>',
             to: process.env.NOTIFICATION_EMAIL,
-            subject: "New Translation Order Received - Typewriters.ai",
-            text: `New order received for Typewriters.ai. Order ID: ${orderDetails.stripeSessionId}, Amount: $${orderDetails.amountTotal.toFixed(2)} ${orderDetails.currency.toUpperCase()}, Language: ${orderDetails.language}. ${orderDetails.folderLink ? `View order folder: ${orderDetails.folderLink}` : ''} Please check the HTML version for full details.`,
+            subject: "New Translation Order Received - Typewriters.io",
+            text: `New order received for Typewriters.io. Order ID: ${orderDetails.stripeSessionId}, Amount: $${orderDetails.amountTotal.toFixed(2)} ${orderDetails.currency.toUpperCase()}, Language: ${orderDetails.language}. ${orderDetails.folderLink ? `View order folder: ${orderDetails.folderLink}` : ''} Please check the HTML version for full details.`,
             html: htmlContent,
         });
 

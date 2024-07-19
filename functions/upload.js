@@ -13,6 +13,7 @@ const allowedOrigins = [
     "https://eduardos-stupendous-site-4488f5.webflow.io",
     "https://www.typewriters.ai",
     "https://jovial-treacle-09f7aa.netlify.app",
+    "https://www.typewriters.io",
     // Add other allowed domains as needed
 ];
 
